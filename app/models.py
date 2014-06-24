@@ -5,6 +5,7 @@ class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+    creator_email = db.Column(db.String(64))
 
     drivers = db.relationship('Driver', backref='event', lazy='dynamic')
 
@@ -12,14 +13,16 @@ class Event(db.Model):
         return '<Event %r>' % self.name
 
 
-class User(db.Model):
+class Driver(db.Model):
     __tablename__ = 'drivers'
     id = db.Column(db.Integer, primary_key=True)
-    direction = db.Columb(db.Boolean)
+    goingthere = db.Columb(db.Boolean) 
     name = db.Column(db.String(64))
     phone = db.Column(db.String(64))
     email = db.Column(db.String(64))
     capacity = db.Column(db.Integer)
+    make_model = db.Column(db.String(64))
+    car_color = db.Column(db.String(64))
     datetime = db.Column(db.DateTime)
     location = db.Column(db.String(64))
 
