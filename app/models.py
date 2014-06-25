@@ -1,5 +1,4 @@
 from . import db
-from itsdangerous import URLSafeSerializer
 
 
 class Event(db.Model):
@@ -16,10 +15,10 @@ class Event(db.Model):
 class Driver(db.Model):
     __tablename__ = 'drivers'
     id = db.Column(db.Integer, primary_key=True)
+    goingthere = db.Column(db.Boolean) 
     name = db.Column(db.String(64))
     email = db.Column(db.String(64))
     phone = db.Column(db.String(64))
-    goingthere = db.Column(db.Boolean) 
     capacity = db.Column(db.Integer)
     make_model = db.Column(db.String(64))
     car_color = db.Column(db.String(64))
