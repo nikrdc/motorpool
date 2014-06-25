@@ -6,7 +6,6 @@ from wtforms.validators import Email, Length, Required, NumberRange
 
 class EventForm(Form):
 	name = StringField('Event name', validators = [Required()])
-	email = StringField('Email address', validators = [Required(), Email()])
 	submit = SubmitField('Submit')
 
 
