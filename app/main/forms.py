@@ -1,20 +1,21 @@
-from flask.ext.wtf import from
+from flask.ext.wtf import Form
 from wtforms import RadioField, StringField, IntegerField, DateTimeField, 
 					SubmitField
 from wtforms.validators import Email, Length, Required, NumberRange
 
 
-class NewEventForm(Form):
+class UserForm(Form):
 	name = StringField('Event name', validators = [Required()])
 	email = StringField('Email address', validators = [Required(), Email()])
-	submit = SubmitField('Create')
 
 
-class NewDriverForm(Form):
-	goingthere = RadioField('Direction', validators = [Required()])
-	name = StringField('Name', validators = [Required()])
+class EventForm(UserForm):
+	submit = SubmitField('Submit')
+
+
+class DriverForm(UserForm):
 	phone = StringField('Phone number', validators = [Required(), Length(10)])
-	email = StringField('Email address', validators = [Required(), Email()])
+	goingthere = RadioField('Direction', validators = [Required()])
 	capacity = IntegerField('Car capacity', validators = [Required(), 
 														  NumberRange(1, 10)])
 	make_model = StringField('Car make and model', validators = [Required()])
@@ -22,15 +23,10 @@ class NewDriverForm(Form):
 	datetime = DateTimeField('Departure time', validators = [Required()])
 	location = StringField('Location (leaving from/going to)', 
 						   validators = [Required()])
-	submit = SubmitField('Create')
+	submit = SubmitField('Submit')
 
 
-class NewRiderForm(Form):
-	name = StringField('Name', validators = [Required()])
+class RiderForm(UserForm):
 	phone = StringField('Phone number', validators = [Required(), Length(10)])
-	email = StringField('Email address', validators = [Required(), Email()])
-	submit = SubmitField('Create')
+	submit = SubmitField('Submit')
 
-
-class EditEventForm(Form):
-	

@@ -1,11 +1,30 @@
 from . import db
+from itsdangerous import URLSafeSerializer
 
-
-class Event(db.Model):
-    __tablename__ = 'events'
+class User:
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), unique=True)
-    creator_email = db.Column(db.String(64))
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
+
+    edit_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], 
+                                        salt='edit')
+    
+    def generate_token(self, serializer):
+        return serializer.dumps(self.id)
+
+    def find(token, serializer):
+        try:
+            data = serializer.loads(token)
+        except:
+            return False
+        return data
+
+
+class Event(db.Model, User):
+    __tablename__ = 'events'
+
+    public_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], 
+                                          salt='public')
 
     drivers = db.relationship('Driver', backref='event', lazy='dynamic')
 
@@ -13,13 +32,11 @@ class Event(db.Model):
         return '<Event %r>' % self.name
 
 
-class Driver(db.Model):
+class Driver(db.Model, User):
     __tablename__ = 'drivers'
-    id = db.Column(db.Integer, primary_key=True)
-    goingthere = db.Columb(db.Boolean) 
-    name = db.Column(db.String(64))
+
     phone = db.Column(db.String(64))
-    email = db.Column(db.String(64))
+    goingthere = db.Column(db.Boolean) 
     capacity = db.Column(db.Integer)
     make_model = db.Column(db.String(64))
     car_color = db.Column(db.String(64))
@@ -33,14 +50,13 @@ class Driver(db.Model):
         return '<Driver %r>' % self.name
 
 
-class Rider(db.Model):
+class Rider(db.Model, User):
     __tablename__ = 'riders'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
+
     phone = db.Column(db.String(64))
-    email = db.Column(db.String(64))
 
     driver_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
 
     def __repr__(self):
         return '<Rider %r>' % self.name
+
