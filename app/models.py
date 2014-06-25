@@ -1,30 +1,12 @@
 from . import db
 from itsdangerous import URLSafeSerializer
 
-class User:
+
+class Event(db.Model):
+    __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     email = db.Column(db.String(64))
-
-    edit_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], 
-                                        salt='edit')
-    
-    def generate_token(self, serializer):
-        return serializer.dumps(self.id)
-
-    def find(token, serializer):
-        try:
-            data = serializer.loads(token)
-        except:
-            return False
-        return data
-
-
-class Event(db.Model, User):
-    __tablename__ = 'events'
-
-    public_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], 
-                                          salt='public')
 
     drivers = db.relationship('Driver', backref='event', lazy='dynamic')
 
@@ -32,9 +14,11 @@ class Event(db.Model, User):
         return '<Event %r>' % self.name
 
 
-class Driver(db.Model, User):
+class Driver(db.Model):
     __tablename__ = 'drivers'
-
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
     phone = db.Column(db.String(64))
     goingthere = db.Column(db.Boolean) 
     capacity = db.Column(db.Integer)
@@ -50,9 +34,11 @@ class Driver(db.Model, User):
         return '<Driver %r>' % self.name
 
 
-class Rider(db.Model, User):
+class Rider(db.Model):
     __tablename__ = 'riders'
-
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
     phone = db.Column(db.String(64))
 
     driver_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
