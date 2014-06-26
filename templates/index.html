@@ -2,4 +2,8 @@
 {% block title %}Motorpool{% endblock %}
 {% block body %}
 	<img src="/static/logo.png">
+	<form method="POST">
+    	{{ form.name.label }} {{ form.name() }}
+    	{{ form.submit() }}
+	</form>
 {% endblock %}
