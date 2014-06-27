@@ -1,0 +1,93 @@
+
+
+/* Fonts */
+
+@font-face {
+    font-family: SentinelBook;
+    src: url('fonts/Sentinel-Book.otf');
+}
+
+@font-face {
+    font-family: WhitneySemibold;
+    src: url('fonts/Whitney-Semibold.otf');
+}
+
+
+/* Landing */
+
+#logo {
+    width: 600px;
+    margin: 75px auto 0 auto;
+    text-align: center;
+}
+
+#logo img {
+    width: 100%;
+}
+
+#slogan {
+    text-align: center;
+    font-family: 'SentinelBook';
+    font-size: 20px;
+}
+
+.form {
+    width: 320px;
+    margin: 50px auto 0 auto;
+}
+
+.form label {
+    text-transform: uppercase;
+    font-family: 'WhitneySemibold';
+    font-size: 12px;
+    margin: 0 0 0 2px;
+    color: #595959;
+}
+
+#name {
+    background-color: #e5e5e5;
+    width: 320px;
+    height: 40px;
+    border: none;
+    font-size: 20px;
+    padding: 10px;
+    margin: 2px 0 50px 0;
+    color: #595959;
+}
+
+#name:focus {
+    outline: 3px solid #bbb;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
+#submit_button {
+    margin: 0 auto;
+    width: 130px;
+}
+
+#submit {
+    background-color: #ddbc83;
+    border: none;
+    width: 130px;
+    padding: 7px 0 5px 0;
+    text-transform: uppercase;
+    font-family: 'WhitneySemibold';
+    color: #6d5a43;
+    font-size: 13px;
+}
+
+#submit:hover {
+    outline: 3px solid #6d5a43;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+}
+
