@@ -4,6 +4,7 @@
 	<div id="logo"><img src="/static/logo.png"></div>
     <div id="slogan">Organize carpools for your event:</div>
 	<form method="POST" class="form">
+        {{ form.csrf_token }}
     	{{ form.name.label }}<br>
         {{ form.name() }}<br>
     	<div id="submit_button">{{ form.submit() }}</div>

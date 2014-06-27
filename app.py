@@ -13,8 +13,8 @@ from flask.ext.moment import Moment
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hard to guess string'
-app.config['SQLALCHEMY_DATABASE_URI'] =\
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 
@@ -22,6 +22,11 @@ manager = Manager(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+def make_shell_context():
+    return dict(app=app, db=db, Event=Event, Driver=Driver, Rider=Rider)
+manager.add_command("shell", Shell(make_context=make_shell_context))
+manager.add_command('db', MigrateCommand)
 
 
 # Models
@@ -115,12 +120,6 @@ class AddRiderForm(Form):
     submit = SubmitField('Submit')
 
 
-def make_shell_context():
-    return dict(app=app, db=db, Event=Event, Driver=Driver, Rider=Rider)
-manager.add_command("shell", Shell(make_context=make_shell_context))
-manager.add_command('db', MigrateCommand)
-
-
 # 
 
 serializer = URLSafeSerializer(app.config['SECRET_KEY'])
@@ -183,7 +182,7 @@ def show_driver(event_token, driver_token):
             driver.datetime = form.datetime.data
             driver.location = form.location.data
             db.session.commit()
-            return redirect(url_for('show_event', event_token = event_token))
+            return redirect(url_for('show_event', event_token=event_token))
         return render_template('show_driver.html', form = form)
     return False
 
