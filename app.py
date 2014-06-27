@@ -72,7 +72,7 @@ class Rider(db.Model):
 
 class AddEventForm(Form):
     name = StringField('Event name', validators = [Required()])
-    submit = SubmitField('Submit')
+    submit = SubmitField('Create')
 
 
 class AddDriverForm(Form):
