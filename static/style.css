@@ -12,12 +12,35 @@
     src: url('fonts/Whitney-Semibold.otf');
 }
 
+@font-face {
+    font-family: WhitneyMedium;
+    src: url('fonts/Whitney-Medium.otf');
+}
+
+
+body {
+    margin: 75px 0 0 0;
+}
+
+/* Flashes */
+
+#flashed_messages {
+    height: 25px;
+    text-align: center;
+    color: #b51a1a;
+    font-family: 'WhitneyMedium';
+    font-size: 18px;
+}
+
+.message {
+
+}
 
 /* Landing */
 
 #logo {
     width: 600px;
-    margin: 75px auto 0 auto;
+    margin: 0 auto;
     text-align: center;
 }
 

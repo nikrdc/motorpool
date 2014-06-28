@@ -161,8 +161,11 @@ def index():
 
 @app.route('/<event_token>')
 def show_event(event_token):
-    event = Event.query.get(find(event_token))
-    return render_template('event.html', event = event)
+    if find(event_token):
+        event = Event.query.get(find(event_token))
+        return render_template('event.html', event = event)
+    flash('The event you\'re looking for doesn\'t exist!')
+    return redirect(url_for('index'))
 
 
 @app.route('/<event_token>/<driver_token>', methods = ['GET', 'POST'])
