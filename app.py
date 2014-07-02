@@ -4,7 +4,8 @@ from flask import Flask, render_template, redirect, session, redirect, \
 from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
-from wtforms import StringField, IntegerField, DateTimeField, SubmitField
+from wtforms import StringField, SelectMultipleField, IntegerField, \
+                    DateTimeField, SubmitField
 from wtforms.validators import Length, Required, NumberRange
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -45,7 +46,7 @@ class Event(db.Model):
 class Driver(db.Model):
     __tablename__ = 'drivers'
     id = db.Column(db.Integer, primary_key=True)
-    goingthere = db.Column(db.Boolean) 
+    going_there = db.Column(db.Boolean) 
     name = db.Column(db.String(64))
     phone = db.Column(db.String(64))
     capacity = db.Column(db.Integer)
@@ -75,52 +76,40 @@ class Rider(db.Model):
 
 # Forms
 
-class AddEventForm(Form):
+class EventForm(Form):
     name = StringField('Event name', validators = [Required()])
     submit = SubmitField('Create')
 
 
-class AddDriverForm(Form):
+class DriverForm(Form):
     name = StringField('Name', validators = [Required()])
     phone = StringField('Phone number', validators = [Required(), Length(10)])
     capacity = IntegerField('Car capacity', validators = [Required(), 
                                                           NumberRange(1, 10)])
     make_model = StringField('Car make and model', validators = [Required()])
     car_color = StringField('Car color', validators = [Required()])
-    datetime = DateTimeField('Departing', validators = [Required()])
 
-class AddDriverThereForm(AddDriverForm):
-    location = StringField('Leaving from', validators = [Required()])
-    submit = SubmitField('Submit')
+    directions = SelectMultipleField('What direction are you travelling in?',
+        choices=[('driving_there', 'I am driving there'), 
+                 ('driving_back', 'I am driving back')],
+        validators = [Required()])
+    
+    leaving_from = StringField('Leaving from', validators = [Required()])
+    leaving_at = DateTimeField('Departing at', validators = [Required()])
 
-class AddDriverBackForm(AddDriverForm):
-    location = StringField('Going to', validators = [Required()])
-    submit = SubmitField('Submit')
+    going_to = StringField('Going to', validators = [Required()])
+    going_at = DateTimeField('Departing at', validators = [Required()])
 
-
-class EditDriverForm(Form):
-    capacity = IntegerField('Car capacity', validators = [Required(), 
-                                                          NumberRange(1, 10)])
-    make_model = StringField('Car make and model', validators = [Required()])
-    car_color = StringField('Car color', validators = [Required()])
-    datetime = DateTimeField('Departing', validators = [Required()])
-
-class EditDriverThereForm(EditDriverForm):
-    location = StringField('Leaving from', validators = [Required()])
-    submit = SubmitField('Submit')
-
-class EditDriverBackForm(EditDriverForm):
-    location = StringField('Going to', validators = [Required()])
     submit = SubmitField('Submit')
 
 
-class AddRiderForm(Form):
+class RiderForm(Form):
     name = StringField('Name', validators = [Required()])
     phone = StringField('Phone number', validators = [Required(), Length(10)])
     submit = SubmitField('Submit')
 
 
-# 
+# Helpers
 
 serializer = URLSafeSerializer(app.config['SECRET_KEY'])
 
@@ -134,6 +123,8 @@ def find(token):
         return False
     return data
 
+
+# Errors
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -168,53 +159,19 @@ def show_event(event_token):
     return redirect(url_for('index'))
 
 
+# AIFHIDAFISDF
 @app.route('/<event_token>/<driver_token>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_token):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver(event_token))
-    if driver in event.drivers:
-        if driver.goingthere:
-            form = EditDriverThereForm()
-        else:
-            form = EditDriverBackForm()
-        form.populate_obj(driver)
-        if form.validate_on_submit():
-            driver.capacity = form.capacity.data
-            driver.make_model = form.make_model.data
-            driver.car_color = form.car_color.data
-            driver.datetime = form.datetime.data
-            driver.location = form.location.data
-            db.session.commit()
-            return redirect(url_for('show_event', event_token=event_token))
-        return render_template('show_driver.html', form = form)
-    return False
+    form = DriverForm()
 
 
-@app.route('/<event_token>/add/<driver_type>', methods = ['GET', 'POST'])
+# AIFHIDAFISDF
+@app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token, driver_type):
-    if driver_type == 'there':
-        form = AddDriverThereForm()
-        direction_boolean = True
-    elif driver_type == 'back':
-        form = AddDriverBackForm()
-        direction_boolean = False
-    else:
-        return False
+    form = DriverForm()
     event = Event.query.get(find(event_token))
-    if form.validate_on_submit():
-        driver = Driver(goingthere = direction_boolean, 
-                        name = form.name.data,
-                        phone = form.phone.data,
-                        capacity = form.capacity.data,
-                        make_model = form.make_model.data,
-                        car_color = form.car_color.data,
-                        datetime = form.datetime.data,
-                        location = form.location.data)
-        event.drivers.append(driver)
-        db.session.add(driver)
-        db.session.commit()
-        return redirect(url_for('show_event', event_token = event_token))
-    return render_template('add_driver.html', form = form)
 
 
 @app.route('/<event_token>/<driver_token>/add', methods = ['GET', 'POST'])
@@ -222,7 +179,7 @@ def add_rider(event_token, driver_token):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver(event_token))
     if driver in event.drivers:
-        form = AddRiderForm()
+        form = RiderForm()
         if form.validate_on_submit():
             rider = Rider(name = form.name.data,
                           phone = form.phone.data)
@@ -234,7 +191,7 @@ def add_rider(event_token, driver_token):
     return False
 
 
-#
+
 
 if __name__ == '__main__':
     manager.run()
