@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Join as a driver{% endblock %}
+{% block body %}
+    <form method="POST" class="form">
+        {{ form.csrf_token }}
+        {{ form.name.label }}<br>
+        {{ form.name() }}<br>
+        {{ form.phone.label }}<br>
+        {{ form.phone() }}<br>
+        {{ form.capacity.label }}<br>
+        {{ form.capacity() }}<br>
+        {{ form.car_color.label }}<br>
+        {{ form.car_color() }}<br>
+        {{ form.make_model.label }}<br>
+        {{ form.make_model() }}<br>
+        {{ form.directions.label }}<br>
+        {{ form.directions() }}<br>
+        {{ form.leaving_from.label }}<br>
+        {{ form.leaving_from() }}<br>
+        {{ form.leaving_at.label }}<br>
+        {{ form.leaving_at() }}<br>
+        {{ form.going_to.label }}<br>
+        {{ form.going_to() }}<br>
+        {{ form.going_at.label }}<br>
+        {{ form.going_at() }}<br>
+        {{ form.submit() }}
+    </form>
+{% endblock %}

@@ -84,8 +84,8 @@ class EventForm(Form):
 class DriverForm(Form):
     name = StringField('Name', validators = [Required()])
     phone = StringField('Phone number', validators = [Required(), Length(10)])
-    capacity = IntegerField('Car capacity', validators = [Required(), 
-                                                          NumberRange(1, 10)])
+    capacity = IntegerField('Total car capacity (including driver)', 
+                            validators = [Required(), NumberRange(1, 10)])
     car_color = StringField('Car color', validators = [Required()])
     make_model = StringField('Car make and model', validators = [Required()])
     
@@ -123,7 +123,7 @@ def find(token):
         return False
     return data
 
-def create_driver(direction):
+def create_driver(form, direction):
     if direction == 'driving_there':
         direction_filler = True
         location_filler = 'leaving_from'
@@ -190,13 +190,15 @@ def add_driver(event_token):
     form = DriverForm()
     event = Event.query.get(find(event_token))
     if form.validate_on_submit():
-        if len(form.directions.data) == 2:
-            driver_there = create_driver(form.directions.data[0])
-            driver_back = create_driver(form.directions.data[1])
+        directions = form.directions.data
+        directions_length = len(directions)
+        if directions_length == 2:
+            driver_there = create_driver(form, directions[0])
+            driver_back = create_driver(form, directions[1])
             event.drivers.append(driver_there, driver_back)
             db.session.add(driver_there, driver_back)
-        elif len(form.directions.data) == 1:
-            driver = create_driver(form.directions.data[0])
+        elif directions_length == 1:
+            driver = create_driver(form, directions[0])
             event.drivers.append(driver)
             db.session.add(driver)
         else:
@@ -204,8 +206,6 @@ def add_driver(event_token):
         db.session.commit()
         return redirect(url_for('show_event', event_token = event_token))
     return render_template('add_driver.html', form = form)
-
-
 
 
 @app.route('/<event_token>/<driver_token>/add', methods = ['GET', 'POST'])
