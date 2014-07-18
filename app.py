@@ -5,7 +5,7 @@ from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
 from wtforms import StringField, SelectMultipleField, IntegerField, \
-                    DateTimeField, SubmitField
+                    DateTimeField, SubmitField, widgets
 from wtforms.validators import Length, Required, NumberRange
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -94,6 +94,8 @@ class DriverForm(Form):
         'Which direction(s) are you travelling in?',
         choices=[('driving_there', 'I am driving there'), 
                  ('driving_back', 'I am driving back')],
+        option_widget=widgets.CheckboxInput(),
+        widget = widgets.ListWidget(prefix_label=False),
         validators = [Required()])
     
     leaving_from = StringField('Leaving from', validators = [Required()])

@@ -95,7 +95,7 @@ input[type="text"]:focus {
 }
 
 #submit_button {
-    margin: 27 auto 0 auto;
+    margin: 27px auto 100px auto;
     width: 130px;
 }
 
