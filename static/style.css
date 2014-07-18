@@ -18,9 +18,12 @@
 }
 
 
+/* General */
+
 body {
     margin: 50px 0 0 0;
 }
+
 
 /* Flashes */
 
@@ -35,6 +38,7 @@ body {
 .message {
 
 }
+
 
 /* Landing */
 
@@ -54,6 +58,9 @@ body {
     font-size: 20px;
 }
 
+
+/* Forms */
+
 .form {
     width: 320px;
     margin: 50px auto 0 auto;
@@ -67,18 +74,18 @@ body {
     color: #595959;
 }
 
-#name {
+input[type="text"]  {
     background-color: #e5e5e5;
     width: 320px;
     height: 40px;
     border: none;
     font-size: 20px;
     padding: 10px;
-    margin: 2px 0 50px 0;
+    margin: 2px 0 16px 0;
     color: #595959;
 }
 
-#name:focus {
+input[type="text"]:focus {
     outline: 3px solid #bbb;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
@@ -88,7 +95,7 @@ body {
 }
 
 #submit_button {
-    margin: 0 auto;
+    margin: 27 auto 0 auto;
     width: 130px;
 }
 
@@ -113,4 +120,3 @@ body {
     cursor: pointer;
     text-align: center;
 }
-

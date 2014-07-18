@@ -11,6 +11,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.moment import Moment
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -89,16 +90,17 @@ class DriverForm(Form):
     car_color = StringField('Car color', validators = [Required()])
     make_model = StringField('Car make and model', validators = [Required()])
     
-    directions = SelectMultipleField('Direction',
+    directions = SelectMultipleField(
+        'Which direction(s) are you travelling in?',
         choices=[('driving_there', 'I am driving there'), 
                  ('driving_back', 'I am driving back')],
         validators = [Required()])
     
     leaving_from = StringField('Leaving from', validators = [Required()])
-    leaving_at = DateTimeField('Departing at', validators = [Required()])
+    leaving_at = DateTimeField('Leaving at', validators = [Required()])
 
     going_to = StringField('Going to', validators = [Required()])
-    going_at = DateTimeField('Departing at', validators = [Required()])
+    going_at = DateTimeField('Going at', validators = [Required()])
 
     submit = SubmitField('Submit')
 
@@ -123,7 +125,7 @@ def find(token):
         return False
     return data
 
-def create_driver(form, direction):
+def create_driver(form, direction, event):
     if direction == 'driving_there':
         direction_filler = True
         location_filler = 'leaving_from'
@@ -139,7 +141,8 @@ def create_driver(form, direction):
                     car_color = form.car_color.data,
                     make_model = form.make_model.data,
                     location = getattr(form, location_filler).data,
-                    datetime = getattr(form, datetime_filler).data)
+                    datetime = getattr(form, datetime_filler).data,
+                    event = event)
     return driver
 
 
@@ -193,13 +196,11 @@ def add_driver(event_token):
         directions = form.directions.data
         directions_length = len(directions)
         if directions_length == 2:
-            driver_there = create_driver(form, directions[0])
-            driver_back = create_driver(form, directions[1])
-            event.drivers.append(driver_there, driver_back)
-            db.session.add(driver_there, driver_back)
+            driver_there = create_driver(form, directions[0], event)
+            driver_back = create_driver(form, directions[1], event)
+            db.session.add_all([driver_there, driver_back])
         elif directions_length == 1:
-            driver = create_driver(form, directions[0])
-            event.drivers.append(driver)
+            driver = create_driver(form, directions[0], event)
             db.session.add(driver)
         else:
             return False
@@ -216,8 +217,8 @@ def add_rider(event_token, driver_token):
         form = RiderForm()
         if form.validate_on_submit():
             rider = Rider(name = form.name.data,
-                          phone = form.phone.data)
-            driver.riders.append(rider)
+                          phone = form.phone.data,
+                          driver = driver)
             db.session.add(rider)
             db.session.commit()
             return redirect(url_for('show_event', event_token = event_token))
