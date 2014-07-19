@@ -4,4 +4,4 @@ Twice a year, Viget employees carpool to and from large company events. Currentl
 
 #### Notes:
 * Font files have not been included.
-* The secret key must be set in the environment for the app to work. Follow [this](http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables) link to learn how to set a secret key with an environment variable.
+* The secret key must be set in the environment for the app to function securely. Follow [this](http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables) link to learn how to set a secret key with an environment variable.
