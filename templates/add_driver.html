@@ -3,11 +3,11 @@
 {% block body %}
     
     <script>
-    $(document).ready(function(){
+    $(document).ready(function() {
         $('#ride_there').hide();
         $('#ride_back').hide();
 
-        $('#directions-0').change(function(){
+        $('#directions-0').change(function() {
             if (this.checked) {
                 $('#ride_there').slideDown(400)
             } else {
@@ -15,7 +15,7 @@
             }
         });
 
-        $('#directions-1').change(function(){
+        $('#directions-1').change(function() {
             if (this.checked) {
                 $('#ride_back').slideDown(400)
             } else {

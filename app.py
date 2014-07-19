@@ -116,12 +116,16 @@ class RiderForm(Form):
 
 # Helpers
 
-serializer = URLSafeSerializer(app.config['SECRET_KEY'])
+event_serializer = URLSafeSerializer(app.config['SECRET_KEY'], 
+                                     salt = 'event-salt')
 
-def generate_token(self):
+driver_serializer = URLSafeSerializer(app.config['SECRET_KEY'], 
+                                      salt = 'driver-salt')
+
+def generate_token(self, serializer):
     return serializer.dumps(self.id)
 
-def find(token):
+def find(token, serializer):
     try:
         data = serializer.loads(token)
     except:
@@ -170,15 +174,15 @@ def index():
         event = Event(name = form.name.data)
         db.session.add(event)
         db.session.commit()
-        event_token = generate_token(event)
+        event_token = generate_token(event, event_serializer)
         return redirect(url_for('show_event', event_token = event_token))
     return render_template('index.html', form = form)
 
 
 @app.route('/<event_token>')
 def show_event(event_token):
-    if find(event_token):
-        event = Event.query.get(find(event_token))
+    if find(event_token, event_serializer):
+        event = Event.query.get(find(event_token, event_serializer))
         return render_template('event.html', event = event)
     flash('The event you\'re looking for doesn\'t exist!')
     return redirect(url_for('index'))
@@ -194,7 +198,7 @@ def show_driver(event_token, driver_token):
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token):
     form = DriverForm()
-    event = Event.query.get(find(event_token))
+    event = Event.query.get(find(event_token, event_serializer))
     if form.validate_on_submit():
         directions = form.directions.data
         directions_length = len(directions)
@@ -214,8 +218,8 @@ def add_driver(event_token):
 
 @app.route('/<event_token>/<driver_token>/add', methods = ['GET', 'POST'])
 def add_rider(event_token, driver_token):
-    event = Event.query.get(find(event_token))
-    driver = Driver.query.get(driver(event_token))
+    event = Event.query.get(find(event_token, event_serializer))
+    driver = Driver.query.get(find(driver_token, driver_serializer))
     if driver in event.drivers:
         form = RiderForm()
         if form.validate_on_submit():

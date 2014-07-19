@@ -157,10 +157,11 @@ input[type="checkbox"] {
     cursor: pointer;
     margin: 0 0 -40px 282px;
     outline-width: 0;
+    background: url('/static/img/unchecked.png') no-repeat center #e5e5e5;
 }
 
 input[type="checkbox"]:checked {
-    background: url('/static/img/check.png') no-repeat center #e5e5e5;
+    background: url('/static/img/checked.png') no-repeat center #e5e5e5;
     cursor: pointer;
     border: none;
     outline-width: 0;
