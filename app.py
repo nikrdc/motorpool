@@ -98,11 +98,12 @@ class DriverForm(Form):
         widget = widgets.ListWidget(prefix_label=False),
         validators = [Required()])
     
-    leaving_from = StringField('Leaving from', validators = [Required()])
-    leaving_at = DateTimeField('Leaving at', validators = [Required()])
+    leaving_from = StringField('Location leaving from', 
+                               validators = [Required()])
+    leaving_at = DateTimeField('Time departing at', validators = [Required()])
 
-    going_to = StringField('Going to', validators = [Required()])
-    going_at = DateTimeField('Going at', validators = [Required()])
+    going_to = StringField('Location going to', validators = [Required()])
+    going_at = DateTimeField('Time departing at', validators = [Required()])
 
     submit = SubmitField('Submit')
 
