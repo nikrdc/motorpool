@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Join as a driver{% endblock %}
 {% block body %}
+    
+    <div class="title">Join as a driver</div>
+
     <form method="POST" class="form">
         {{ form.csrf_token }}
         {{ form.name.label }}<br>
@@ -15,10 +18,14 @@
         {{ form.make_model() }}<br>
         {{ form.directions.label }}<br>
         {{ form.directions() }}<br>
+
+        <div class="header">Ride there</div>
         {{ form.leaving_from.label }}<br>
         {{ form.leaving_from() }}<br>
         {{ form.leaving_at.label }}<br>
         {{ form.leaving_at() }}<br>
+
+        <div class="header">Ride back</div>
         {{ form.going_to.label }}<br>
         {{ form.going_to() }}<br>
         {{ form.going_at.label }}<br>
