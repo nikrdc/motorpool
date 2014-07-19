@@ -2,6 +2,29 @@
 {% block title %}Join as a driver{% endblock %}
 {% block body %}
     
+    <script>
+    $(document).ready(function(){
+        $('#ride_there').hide();
+        $('#ride_back').hide();
+
+        $('#directions-0').change(function(){
+            if (this.checked) {
+                $('#ride_there').slideDown(400)
+            } else {
+                $('#ride_there').slideUp(200)
+            }
+        });
+
+        $('#directions-1').change(function(){
+            if (this.checked) {
+                $('#ride_back').slideDown(400)
+            } else {
+                $('#ride_back').slideUp(200)
+            }
+        })
+    });
+    </script>
+    
     <div class="title">Join as a driver</div>
 
     <form method="POST" class="form">
@@ -19,17 +42,22 @@
         {{ form.directions.label }}<br>
         {{ form.directions() }}<br>
 
-        <div class="header">Ride there</div>
-        {{ form.leaving_from.label }}<br>
-        {{ form.leaving_from() }}<br>
-        {{ form.leaving_at.label }}<br>
-        {{ form.leaving_at() }}<br>
+        <div id="ride_there">
+            <div class="header">Ride there</div>
+            {{ form.leaving_from.label }}<br>
+            {{ form.leaving_from() }}<br>
+            {{ form.leaving_at.label }}<br>
+            {{ form.leaving_at() }}<br>
+        </div>
 
-        <div class="header">Ride back</div>
-        {{ form.going_to.label }}<br>
-        {{ form.going_to() }}<br>
-        {{ form.going_at.label }}<br>
-        {{ form.going_at() }}<br>
+        <div id="ride_back">
+            <div class="header">Ride back</div>
+            {{ form.going_to.label }}<br>
+            {{ form.going_to() }}<br>
+            {{ form.going_at.label }}<br>
+            {{ form.going_at() }}<br>
+        </div>
+
         <div id="submit_button">{{ form.submit() }}</div>
     </form>
 {% endblock %}
