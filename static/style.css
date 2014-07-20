@@ -13,6 +13,11 @@
 }
 
 @font-face {
+    font-family: WhitneyBook;
+    src: url('fonts/Whitney-Book.otf');
+}
+
+@font-face {
     font-family: WhitneyMedium;
     src: url('fonts/Whitney-Medium.otf');
 }
@@ -43,7 +48,7 @@ body {
     font-family: 'SentinelBook';
     text-align: center;
     font-size: 25px;
-    margin: -30px 0 -20px 0;
+    margin: -30px 0 0 0;
 }
 
 
@@ -55,10 +60,6 @@ body {
     color: #b51a1a;
     font-family: 'WhitneyMedium';
     font-size: 18px;
-}
-
-.message {
-
 }
 
 
@@ -78,6 +79,66 @@ body {
     text-align: center;
     font-family: 'SentinelBook';
     font-size: 20px;
+}
+
+
+/* Driver card */
+
+.driver_card {
+    background-color: #e5e5e5;
+    width: 290px;
+    margin: 0 auto;
+    padding: 15px;
+    font-family: 'Whitney-Medium';
+    font-size: 16px;
+    color: #393939;
+}
+
+.driver_name {
+    font-family: 'Whitney-Medium';
+    padding: 0 3px;
+    font-size: 18px;
+}
+
+.linebreak {
+    width: 290px;
+    border-bottom: 1px solid #abb4b7;
+    margin: 4px 0 15px 0;
+}
+
+.descriptor {
+    text-transform: uppercase;
+    font-family: 'WhitneySemibold';
+    font-size: 12px;
+    margin: 0 0 0 2px;
+    color: #595959;
+    width: 105px;
+    text-align: right;
+}
+
+.date, .time, .location {
+    width: 190px;
+}
+
+.date {
+    margin: -15px 0 0 125px;
+}
+
+.time {
+    margin: 5px 0 18px 125px;
+}
+
+.location {
+    margin: -15px 0 18px 125px;
+}
+ 
+.driver_card ul {
+    list-style-type: none;
+    margin: -15px 0 0 85px;
+}
+
+.driver_card li {
+    padding: 0 0 4px 0;
 }
 
 
@@ -102,9 +163,10 @@ input[type="text"]  {
     height: 40px;
     border: none;
     font-size: 20px;
-    padding: 10px;
-    margin: 2px 0 16px 0;
-    color: #595959;
+    padding: 10px 10px 8px 10px;
+    margin: 2px 0 14px 0;
+    color: #393939;
+    font-family: 'Whitney-Book';
 }
 
 input[type="text"]:focus {
@@ -175,13 +237,17 @@ input[type="checkbox"]:checked {
     display: block;
     border: none;
     font-size: 20px;
-    padding: 8px 10px 12px 10px;
-    color: #595959;
-    font-family: Lucida Grande, sans-serif;
+    padding: 12px 10px 8px 10px;
+    color: #393939;
+    font-family: 'Whitney-Book';
     cursor: pointer;
 }
 
 #directions li {
     margin: 5px 0;
+}
+
+.new_item {
+    margin: 30px auto 0 auto;
 }
 

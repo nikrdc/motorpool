@@ -4,22 +4,35 @@
 
     <div class="title">Join this ride</div>
 
-    <div id="rider">
-        <div id="driver_name">{{ driver.name }}</div>
+    <div class="new_item">
+        <div class="driver_card">
+            <div class="driver_name">{{ driver.name }}</div>
+            <div class="linebreak"></div>
 
-        <div class="descriptor">Departure time</div>
-        <div class="data">{{ driver.datetime }}</div>
+            <div class="descriptor">Departure time</div>
+            <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
+            <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
 
-        <div class="descriptor">Leaving from</div>
-        <div class="data">{{ driver.location }}</div>
+            <div class="descriptor">Leaving from</div>
+            <div class="location">{{ driver.location }}</div>
+
+            {% if driver.riders.all() %}
+                <div class="descriptor">Current riders</div>
+                <ul>
+                {% for rider in driver.riders.all() %}
+                    <li>{{ rider.name }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <form method="POST" class="form">
+            {{ form.csrf_token }}
+            {{ form.name.label }}<br>
+            {{ form.name() }}<br>
+            {{ form.phone.label }}<br>
+            {{ form.phone() }}<br>
+            <div id="submit_button">{{ form.submit() }}</div>
+        </form>
     </div>
-
-    <form method="POST" class="form">
-        {{ form.csrf_token }}
-        {{ form.name.label }}<br>
-        {{ form.name() }}<br>
-        {{ form.phone.label }}<br>
-        {{ form.phone() }}<br>
-        <div id="submit_button">{{ form.submit() }}</div>
-    </form>
 {% endblock %}
