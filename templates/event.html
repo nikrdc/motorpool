@@ -1,5 +1,80 @@
 {% extends "base.html" %}
 {% block title %}{{ event.name }}{% endblock %}
 {% block body %}
-    <div id="event_name">{{ event.name }}</div>
+    <div class="title">{{ event.name }}</div>
+
+    <a href="{{ url_for('add_driver', event_token = event_token, _external=True) }}"><div id="driver_button">Join as a driver</div></a>
+
+    <div id="rides">
+        <div id="rides_there">
+            <div class="header">Rides there</div>
+            {% if event.drivers.all() %}
+                {% for driver in event.drivers.all() %}
+                    {% if driver.going_there == True %}
+                        <div class="driver_card">
+                            <div class="driver_name">{{ driver.name }}</div>
+                            <div class="linebreak"></div>
+
+                            <div class="descriptor">Departure time</div>
+                            <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
+                            <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
+
+                            <div class="descriptor">Leaving from</div>
+                            <div class="location">{{ driver.location }}</div>
+
+                            {% if driver.riders.all() %}
+                            <div class="descriptor">Current riders</div>
+                            <ul>
+                                {% for rider in driver.riders.all() %}
+                                <li>{{ rider.name }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% if driver.riders.all()|length < (driver.capacity - 1) %}
+                                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id, _external=True) }}"><div class="rider_button">Join this ride</div></a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="no_drivers">Yuck!</div>
+            {% endif %}
+        </div>
+
+        <div id="rides_back">
+            <div class="header">Rides there</div>
+            {% if event.drivers.all() %}
+                {% for driver in event.drivers.all() %}
+                    {% if driver.going_there == False %}
+                        <div class="driver_card">
+                            <div class="driver_name">{{ driver.name }}</div>
+                            <div class="linebreak"></div>
+
+                            <div class="descriptor">Departure time</div>
+                            <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
+                            <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
+
+                            <div class="descriptor">Leaving from</div>
+                            <div class="location">{{ driver.location }}</div>
+
+                            {% if driver.riders.all() %}
+                            <div class="descriptor">Current riders</div>
+                            <ul>
+                                {% for rider in driver.riders.all() %}
+                                <li>{{ rider.name }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% if driver.riders.all()|length < (driver.capacity - 1) %}
+                                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id, _external=True) }}"><div class="rider_button">Join this ride</div></a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <div class="no_drivers">Yuck!</div>
+            {% endif %}
+        </div>
+    </div>
+
 {% endblock %}

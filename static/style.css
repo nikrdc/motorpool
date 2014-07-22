@@ -85,7 +85,7 @@ body {
 /* Driver card */
 
 .driver_card {
-    background-color: #e5e5e5;
+    background-color: #eee;
     width: 290px;
     margin: 0 auto;
     padding: 15px;
@@ -103,7 +103,7 @@ body {
 .linebreak {
     width: 290px;
     border-bottom: 1px solid #abb4b7;
-    margin: 4px 0 15px 0;
+    margin: 6px 0 15px 0;
 }
 
 .descriptor {
@@ -158,7 +158,7 @@ body {
 }
 
 input[type="text"]  {
-    background-color: #e5e5e5;
+    background-color: #eee;
     width: 320px;
     height: 40px;
     border: none;
@@ -178,12 +178,12 @@ input[type="text"]:focus {
     transition: all 0.3s ease-in-out;
 }
 
-#submit_button {
+.submit_button {
     margin: 27px auto 100px auto;
     width: 130px;
 }
 
-#submit {
+#submit, #driver_button {
     background-color: #ddbc83;
     border: none;
     width: 130px;
@@ -194,7 +194,7 @@ input[type="text"]:focus {
     font-size: 13px;
 }
 
-#submit:hover {
+#submit:hover, #driver_button:hover {
     outline: 3px solid #6d5a43;
     -webkit-transition: all 0.2s ease-in-out;
     -moz-transition: all 0.2s ease-in-out;
@@ -215,15 +215,15 @@ input[type="checkbox"] {
     width: 40px;
     height: 40px;
     -webkit-appearance: none;
-    background-color: #e5e5e5;
+    background-color: #eee;
     cursor: pointer;
     margin: 0 0 -40px 282px;
     outline-width: 0;
-    background: url('/static/img/unchecked.png') no-repeat center #e5e5e5;
+    background: url('/static/img/unchecked.png') no-repeat center #eee;
 }
 
 input[type="checkbox"]:checked {
-    background: url('/static/img/checked.png') no-repeat center #e5e5e5;
+    background: url('/static/img/checked.png') no-repeat center #eee;
     cursor: pointer;
     border: none;
     outline-width: 0;
@@ -231,7 +231,7 @@ input[type="checkbox"]:checked {
 
 #directions label {
     text-transform: none;
-    background-color: #e5e5e5;
+    background-color: #eee;
     height: 20px;
     width: 300px;
     display: block;
@@ -250,4 +250,53 @@ input[type="checkbox"]:checked {
 .new_item {
     margin: 30px auto 0 auto;
 }
+
+
+/* Event */
+
+#rides_there {
+    width: 320px;
+    float: left;
+}
+
+#rides_back {
+    width: 320px;
+    float: right;
+}
+
+#rides {
+    width: 660px;
+    margin: 0 auto;
+}
+
+#driver_button {
+    margin: 38px auto 24px auto;
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+}
+
+.rider_button {
+    width: 320px;
+    background-color: #c0ccd0;
+    color: #64696b;
+    text-transform: uppercase;
+    font-family: 'WhitneySemibold';
+    font-size: 12px;
+    margin: 0 0 -15px -15px;
+    padding: 6px 0;
+    text-align: center;
+}
+
+.rider_button:hover {
+    outline: 3px solid #64696b;
+    -webkit-transition: all 0.3s ease-in-out;
+    -moz-transition: all 0.3s ease-in-out;
+    -ms-transition: all 0.3s ease-in-out;
+    -o-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+
 

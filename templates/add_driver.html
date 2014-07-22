@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Join as a driver{% endblock %}
 {% block body %}
-
 <script>
-    var setSubmit = function(first_check, second_check){
+    var setSubmit = function(first_check, second_check) {
         if (first_check || second_check){
             $('#submit_button').slideDown(400);
         } else {
@@ -43,7 +42,6 @@
             }
         })
     });
-
 </script>
 
 <div class="title">Join as a driver</div>
@@ -79,6 +77,6 @@
         {{ form.going_at() }}<br>
     </div>
 
-    <div id="submit_button">{{ form.submit() }}</div>
+    <div class="submit_button">{{ form.submit() }}</div>
 </form>
 {% endblock %}
