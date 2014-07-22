@@ -183,8 +183,14 @@ def index():
 def show_event(event_token):
     if find(event_token):
         event = Event.query.get(find(event_token))
+        rides_there = [driver for driver in event.drivers.all() if \
+                       driver.going_there == True]
+        rides_back = [driver for driver in event.drivers.all() if \
+                       driver.going_there == False]
         return render_template('event.html', event = event, 
-                               event_token = event_token)
+                               event_token = event_token,
+                               rides_there = rides_there,
+                               rides_back = rides_back)
     else:
         flash('The event you\'re looking for doesn\'t exist!')
         return redirect(url_for('index'))

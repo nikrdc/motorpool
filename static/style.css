@@ -48,18 +48,21 @@ body {
     font-family: 'SentinelBook';
     text-align: center;
     font-size: 25px;
-    margin: -30px 0 0 0;
 }
 
 
 /* Flashes */
 
-#flashed_messages {
+#index_flashed_messages, #event_flashed_messages {
     height: 25px;
     text-align: center;
     color: #b51a1a;
     font-family: 'WhitneyMedium';
     font-size: 18px;
+}
+
+#event_flashed_messages {
+    margin: 0 0 30px 0;
 }
 
 
@@ -84,33 +87,36 @@ body {
 
 /* Driver card */
 
+.driver_card a {
+    color: #393939;
+}
+
 .driver_card {
     background-color: #eee;
-    width: 290px;
+    width: 320px;
     margin: 0 auto;
-    padding: 15px;
     font-family: 'Whitney-Medium';
     font-size: 16px;
-    color: #393939;
 }
 
 .driver_name {
     font-family: 'Whitney-Medium';
     padding: 0 3px;
     font-size: 18px;
+    padding: 15px 0 0 15px;
 }
 
 .linebreak {
     width: 290px;
     border-bottom: 1px solid #abb4b7;
-    margin: 6px 0 15px 0;
+    margin: 6px auto 15px auto;
 }
 
 .descriptor {
     text-transform: uppercase;
     font-family: 'WhitneySemibold';
     font-size: 12px;
-    margin: 0 0 0 2px;
+    margin: 0 0 0 17px;
     color: #595959;
     width: 105px;
     text-align: right;
@@ -121,25 +127,34 @@ body {
 }
 
 .date {
-    margin: -15px 0 0 125px;
+    margin: -15px 0 0 140px;
 }
 
 .time {
-    margin: 5px 0 18px 125px;
+    margin: 5px 0 18px 140px;
 }
 
 .location {
-    margin: -15px 0 18px 125px;
+    margin: -15px 0 18px 140px;
 }
  
 .driver_card ul {
     list-style-type: none;
-    margin: -15px 0 0 85px;
+    margin: -15px 0 0 100px;
 }
 
 .driver_card li {
     padding: 0 0 4px 0;
 }
+
+#breaker {
+    height: 2px;
+}
+
+#nobreaker {
+    height: 17px;
+}
+
 
 
 /* Forms */
@@ -285,7 +300,7 @@ a {
     text-transform: uppercase;
     font-family: 'WhitneySemibold';
     font-size: 12px;
-    margin: 0 0 -15px -15px;
+    margin: 10px 0 -15px -0;
     padding: 6px 0;
     text-align: center;
 }
@@ -297,6 +312,14 @@ a {
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+}
+
+.no_drivers {
+    padding: 30px;
+    text-align: center;
+    font-family: 'WhitneyMedium';
+    line-height: 130%;
+    color: #b51a1a;
 }
 
 

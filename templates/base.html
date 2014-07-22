@@ -14,12 +14,6 @@
     {{ moment.include_moment() }}
 </head>
 <body>
-    <div id="flashed_messages">
-    {% for message in get_flashed_messages() %}
-        {{ message }}
-    {% endfor %}
-    </div>
-
 	{% block body %}
 	{% endblock %}
 </body>
