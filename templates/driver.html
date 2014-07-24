@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Ride there with {{ driver.name }}{% endblock %}
+{% block body %}
+<div class="title">Ride there with {{ driver.name }}</div>
+
+<form method="POST" class="form" class="new_item">
+    {{ form.csrf_token }}
+    {{ form.name.label }}<br>
+    {{ form.name() }}<br>
+    {{ form.phone.label }}<br>
+    {{ form.phone() }}<br>
+    {{ form.capacity.label }}<br>
+    {{ form.capacity() }}<br>
+    {{ form.car_color.label }}<br>
+    {{ form.car_color() }}<br>
+    {{ form.make_model.label }}<br>
+    {{ form.make_model() }}<br>
+    {% if driver.going_there %}
+        {{ form.leaving_from.label }}<br>
+        {{ form.leaving_from() }}<br>
+        {{ form.leaving_at.label }}<br>
+        {{ form.leaving_at() }}<br>
+    {% else %}
+        {{ form.going_to.label }}<br>
+        {{ form.going_to() }}<br>
+        {{ form.going_at.label }}<br>
+        {{ form.going_at() }}<br>
+    {% endif %}
+    <div class="submit_button">{{ form.submit() }}</div>
+</form>
+{% endblock %}

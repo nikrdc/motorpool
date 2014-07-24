@@ -95,15 +95,13 @@ class DriverForm(Form):
         choices=[('driving_there', 'I am driving there'), 
                  ('driving_back', 'I am driving back')],
         option_widget=widgets.CheckboxInput(),
-        widget = widgets.ListWidget(prefix_label=False),
-        validators = [Required()])
+        widget = widgets.ListWidget(prefix_label=False))
     
-    leaving_from = StringField('Location leaving from', 
-                               validators = [Required()])
-    leaving_at = DateTimeField('Time departing at', validators = [Required()])
+    leaving_from = StringField('Location leaving from')
+    leaving_at = DateTimeField('Time departing at')
 
-    going_to = StringField('Location going to', validators = [Required()])
-    going_at = DateTimeField('Time departing at', validators = [Required()])
+    going_to = StringField('Location going to')
+    going_at = DateTimeField('Time departing at')
 
     submit = SubmitField('Submit')
 
@@ -196,10 +194,34 @@ def show_event(event_token):
         return redirect(url_for('index'))
 
 
-# AIFHIDAFISDF
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
+    driver = Driver.query.get(driver_id)
+    if driver in event.drivers:
+        form = DriverForm(obj = driver, leaving_from = driver.location,
+                          leaving_at = driver.datetime, 
+                          going_to = driver.location,
+                          going_at = driver.datetime)
+        if form.validate_on_submit():
+            driver.name = form.name.data
+            driver.phone = form.phone.data,
+            driver.capacity = form.capacity.data
+            driver.car_color = form.car_color.data
+            driver.make_model = form.make_model.data
+            if driver.going_there:
+                driver.location = form.leaving_from.data
+                driver.datetime = form.leaving_at.data
+            else:
+                driver.location = form.going_to.data
+                driver.datetime = form.going_at.data
+            db.session.add(driver)
+            db.session.commit()
+            return redirect(url_for('show_event', event_token = event_token))
+        else:
+            return render_template('driver.html', driver = driver, form = form)
+    else:
+        abort(404)
 
 
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
@@ -231,20 +253,26 @@ def add_driver(event_token):
 def add_rider(event_token, driver_id):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver_id)
-    if len(driver.riders.all()) < driver.capacity - 1:
-        form = RiderForm()
-        if form.validate_on_submit():
-            rider = Rider(name = form.name.data,
-                          phone = form.phone.data,
-                          driver = driver)
-            db.session.add(rider)
-            db.session.commit()
-            return redirect(url_for('show_event', event_token = event_token))
+    if driver in event.drivers:
+        if len(driver.riders.all()) < driver.capacity - 1:
+            form = RiderForm()
+            if form.validate_on_submit():
+                rider = Rider(name = form.name.data,
+                              phone = form.phone.data,
+                              driver = driver)
+                db.session.add(rider)
+                db.session.commit()
+                return redirect(url_for('show_event', 
+                                        event_token = event_token))
+            else:
+                return render_template('add_rider.html', form = form, 
+                                       driver = driver,
+                                       event_token = event_token)
         else:
-            return render_template('add_rider.html', form = form, driver = driver)
+            flash('There isn\'t any space left on that ride!')
+            return redirect(url_for('show_event', event_token = event_token))
     else:
-        flash('There isn\'t any space left on that ride!')
-        return redirect(url_for('show_event', event_token = event_token))
+        abort(404)
 
 
 
