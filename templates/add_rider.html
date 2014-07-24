@@ -3,41 +3,39 @@
 {% block body %}
 <div class="title">Join this ride</div>
 
-<div class="new_item">
-    <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id, _external=True) }}">
-        <div class="driver_card">
-            <div class="the_choice_driver">
-                <div class="driver_name">{{ driver.name }}</div>
-                <div class="linebreak"></div>
+<a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id, _external=True) }}">
+    <div class="driver_card" id="join_driver_card">
+        <div class="the_choice_driver">
+            <div class="driver_name">{{ driver.name }}</div>
+            <div class="linebreak"></div>
 
-                <div class="descriptor">Departure time</div>
-                <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
-                <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
+            <div class="descriptor">Departure time</div>
+            <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
+            <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
 
-                <div class="descriptor">Leaving from</div>
-                <div class="location">{{ driver.location }}</div>
+            <div class="descriptor">Leaving from</div>
+            <div class="location">{{ driver.location }}</div>
 
-                {% if driver.riders.all() %}
-                <div class="descriptor riders_label">Current riders</div>
-                <ul>
-                    {% for rider in driver.riders.all() %}
-                    <li>{{ rider.name }}</li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                    <div class="breaker"></div>
-                {% endif %}
-            </div>
+            {% if driver.riders.all() %}
+            <div class="descriptor riders_label">Current riders</div>
+            <ul>
+                {% for rider in driver.riders.all() %}
+                <li>{{ rider.name }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <div class="breaker"></div>
+            {% endif %}
         </div>
-    </a>
+    </div>
+</a>
 
-    <form method="POST" class="form">
-        {{ form.csrf_token }}
-        {{ form.name.label }}<br>
-        {{ form.name() }}<br>
-        {{ form.phone.label }}<br>
-        {{ form.phone() }}<br>
-        <div class="submit_button">{{ form.submit() }}</div>
-    </form>
-</div>
+<form method="POST" class="form">
+    {{ form.csrf_token }}
+    {{ form.name.label }}<br>
+    {{ form.name() }}<br>
+    {{ form.phone.label }}<br>
+    {{ form.phone() }}<br>
+    <div class="submit_button">{{ form.submit() }}</div>
+</form>
 {% endblock %}

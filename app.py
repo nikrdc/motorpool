@@ -82,13 +82,12 @@ class EventForm(Form):
     submit = SubmitField('Create')
 
 
-class DriverForm(Form):
-    name = StringField('Name', validators = [Required()])
-    phone = StringField('Phone number', validators = [Required(), Length(10)])
-    capacity = IntegerField('Total car capacity (including driver)', 
-                            validators = [Required(), NumberRange(1, 10)])
-    car_color = StringField('Car color', validators = [Required()])
-    make_model = StringField('Car make and model', validators = [Required()])
+class PersonForm(Form):
+    name = StringField('Name')
+    phone = StringField('Phone number')
+    capacity = IntegerField('Total car capacity (including driver)')
+    car_color = StringField('Car color')
+    make_model = StringField('Car make and model')
     
     directions = SelectMultipleField(
         'Which direction(s) are you travelling in?',
@@ -104,12 +103,7 @@ class DriverForm(Form):
     going_at = DateTimeField('Time departing at')
 
     submit = SubmitField('Submit')
-
-
-class RiderForm(Form):
-    name = StringField('Name', validators = [Required()])
-    phone = StringField('Phone number', validators = [Required(), Length(10)])
-    submit = SubmitField('Submit')
+    save = SubmitField('Save info')
 
 
 # Helpers
@@ -194,12 +188,14 @@ def show_event(event_token):
         return redirect(url_for('index'))
 
 
+#AHHAHAHJASHFJHASHSAHAHHAHHA
+
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver_id)
     if driver in event.drivers:
-        form = DriverForm(obj = driver, leaving_from = driver.location,
+        form = PersonForm(obj = driver, leaving_from = driver.location,
                           leaving_at = driver.datetime, 
                           going_to = driver.location,
                           going_at = driver.datetime)
@@ -227,7 +223,7 @@ def show_driver(event_token, driver_id):
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token):
     if find(event_token):
-        form = DriverForm()
+        form = PersonForm()
         event = Event.query.get(find(event_token))
         if form.validate_on_submit():
             directions = form.directions.data
@@ -248,6 +244,8 @@ def add_driver(event_token):
     else:
         abort(404)
 
+#AHHAHAHJASHFJHASHSAHAHHAHHA
+
 
 @app.route('/<event_token>/<driver_id>/add', methods = ['GET', 'POST'])
 def add_rider(event_token, driver_id):
@@ -255,7 +253,7 @@ def add_rider(event_token, driver_id):
     driver = Driver.query.get(driver_id)
     if driver in event.drivers:
         if len(driver.riders.all()) < driver.capacity - 1:
-            form = RiderForm()
+            form = PersonForm()
             if form.validate_on_submit():
                 rider = Rider(name = form.name.data,
                               phone = form.phone.data,

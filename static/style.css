@@ -105,7 +105,6 @@ body {
 
 .driver_name {
     font-family: 'Whitney-Medium';
-    padding: 0 3px;
     font-size: 18px;
     padding: 10px 0 0 10px;
 }
@@ -215,7 +214,7 @@ input[type="text"]:focus {
     width: 130px;
 }
 
-#submit, #driver_button {
+#submit, #driver_button, #save {
     background-color: #ddbc83;
     border: none;
     width: 130px;
@@ -226,7 +225,7 @@ input[type="text"]:focus {
     font-size: 13px;
 }
 
-#submit:hover, #driver_button:hover {
+#submit:hover, #driver_button:hover, #save:hover {
     outline: 3px solid #6d5a43;
     -webkit-transition: all 0.2s;
     -moz-transition: all 0.2s;
@@ -277,10 +276,6 @@ input[type="checkbox"]:checked {
 
 #directions li {
     margin: 5px 0;
-}
-
-.new_item {
-    margin: 30px auto 0 auto;
 }
 
 
@@ -341,3 +336,80 @@ a {
     font-size: 18px;
 }
 
+
+/* Driver and rider */
+
+#join_driver_card {
+    margin: 50px auto 0 auto;
+}
+
+#driver_title {
+    margin: 0 0 30px 0;
+}
+
+#driver_riders, #driver_info {
+    width: 320px;
+    margin: 0 auto;
+}
+
+#driver_info {
+    margin: 50px auto 0 auto;
+}
+
+#driver_info .form {
+    margin: 0 0 0 0;
+}
+
+.rider_card {
+    background-color: #eee;
+    padding: 12px;
+    margin: 0 0 10px 0;
+    color: #393939;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+}
+
+.rider_name {
+    font-family: 'Whitney-Medium';
+    font-size: 18px;
+    margin: 0 0 10px 0;
+}
+
+.rider_phone {
+    font-family: 'WhitneyBook';
+    font-size: 16px;
+}
+
+.delete_rider {
+    width: 30px;
+    height: 30px;
+    float: right;
+    margin: -40px 5px 0 0;
+}
+
+#delete_button {
+    background-color: #cc6969;
+    border: none;
+    width: 130px;
+    padding: 7px 0 5px 0;
+    text-transform: uppercase;
+    font-family: 'WhitneySemibold';
+    color: #911313;
+    font-size: 13px;
+    text-align: center;
+    margin: 38px auto 51px auto;
+}
+
+#delete_button:hover {
+    outline: 3px solid #911313;
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+    cursor: pointer;
+    text-align: center;
+}
