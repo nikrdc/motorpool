@@ -4,7 +4,7 @@
 <script>
     $(document).ready(function() {
         $('.delete_rider').hover(function() {
-            $(this.parentNode.parentNode).css("background-color","#cc6969");
+            $(this.parentNode.parentNode).css("background-color","#cc7979");
             $(this.parentNode.parentNode).css("color","#911313");
             $(this).attr('src', "/static/img/close_red.png");
         } ,function() {
@@ -17,7 +17,10 @@
 
 <div class="title" id="driver_title">Ride there with {{ driver.name }}</div>
 
-<a href="{{ url_for('add_driver', event_token = event_token, _external=True) }}"><div id="delete_button">Delete ride</div></a>
+<form action="{{ url_for('delete_driver', event_token = event_token, driver_id = driver.id) }}" method="POST">
+    <input type="hidden" name="_method" value="DELETE"/>
+    <input type="submit" id="delete_button" value="Delete ride"/>
+</form>
 
 {% if driver.riders.all() %}
     <div id="driver_riders">

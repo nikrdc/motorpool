@@ -188,7 +188,7 @@ def show_event(event_token):
         return redirect(url_for('index'))
 
 
-#AHHAHAHJASHFJHASHSAHAHHAHHA
+#AHHAHAHJASHFJHASHSAHAHHAHHA (lol, a comment by alex)
 
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
@@ -215,7 +215,20 @@ def show_driver(event_token, driver_id):
             db.session.commit()
             return redirect(url_for('show_event', event_token = event_token))
         else:
-            return render_template('driver.html', driver = driver, form = form)
+            return render_template('driver.html', event_token = event_token,
+                                   driver = driver, form = form)
+    else:
+        abort(404)
+
+
+@app.route('/<event_token>/<driver_id>/delete', methods = ['POST'])
+def delete_driver(event_token, driver_id):
+    event = Event.query.get(find(event_token))
+    driver = Driver.query.get(driver_id)
+    if driver in event.drivers:
+        db.session.delete(driver)
+        db.session.commit()
+        return redirect(url_for('show_event', event_token = event_token))
     else:
         abort(404)
 

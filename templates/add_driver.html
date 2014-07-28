@@ -4,16 +4,16 @@
 <script>
     var setSubmit = function(first_check, second_check) {
         if (first_check || second_check){
-            $('#submit_button').slideDown(400);
+            $('.submit_button').slideDown(400);
         } else {
-            $('#submit_button').slideUp(200);
+            $('.submit_button').slideUp(200);
         }
     }
 
     $(document).ready(function() {
         $('#ride_there').hide();
         $('#ride_back').hide();
-        $('#submit_button').hide()
+        $('.submit_button').hide()
 
         var first_check = false;
         var second_check = false;

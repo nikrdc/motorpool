@@ -99,12 +99,12 @@ body {
     background-color: #eee;
     width: 320px;
     margin: 0 auto 10px auto;
-    font-family: 'Whitney-Medium';
+    font-family: 'WhitneyMedium';
     font-size: 16px;
 }
 
 .driver_name {
-    font-family: 'Whitney-Medium';
+    font-family: 'WhitneyMedium';
     font-size: 18px;
     padding: 10px 0 0 10px;
 }
@@ -164,7 +164,7 @@ body {
 }
 
 .the_choice_driver:hover {
-    background-color: #fafafa;
+    background-color: #fcfcfc;
     -webkit-transition: all 0.2s;
     -moz-transition: all 0.2s;
     -ms-transition: all 0.2s;
@@ -197,7 +197,7 @@ input[type="text"]  {
     padding: 10px 10px 8px 10px;
     margin: 2px 0 14px 0;
     color: #393939;
-    font-family: 'Whitney-Book';
+    font-family: 'WhitneyBook';
 }
 
 input[type="text"]:focus {
@@ -270,7 +270,7 @@ input[type="checkbox"]:checked {
     font-size: 20px;
     padding: 12px 10px 8px 10px;
     color: #393939;
-    font-family: 'Whitney-Book';
+    font-family: 'WhitneyBook';
     cursor: pointer;
 }
 
@@ -373,7 +373,7 @@ a {
 }
 
 .rider_name {
-    font-family: 'Whitney-Medium';
+    font-family: 'WhitneyMedium';
     font-size: 18px;
     margin: 0 0 10px 0;
 }
@@ -391,7 +391,7 @@ a {
 }
 
 #delete_button {
-    background-color: #cc6969;
+    background-color: #cc7979;
     border: none;
     width: 130px;
     padding: 7px 0 5px 0;
@@ -413,3 +413,4 @@ a {
     cursor: pointer;
     text-align: center;
 }
+
