@@ -18,7 +18,6 @@
 <div class="title" id="driver_title">Ride there with {{ driver.name }}</div>
 
 <form action="{{ url_for('delete_driver', event_token = event_token, driver_id = driver.id) }}" method="POST">
-    <input type="hidden" name="_method" value="DELETE"/>
     <input type="submit" id="delete_button" value="Delete ride"/>
 </form>
 
@@ -29,7 +28,9 @@
             <div class="rider_card">
                 <div class="rider_name">{{ rider.name }}</div>
                 <div class="rider_phone">{{ rider.phone }}</div>
-                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id, _external=True) }}"><img class="delete_rider" src="/static/img/close_grey.png"></a>
+                <form action="{{ url_for('delete_rider', event_token = event_token, driver_id = driver.id, rider_id = rider.id) }}" method="POST">
+                    <input type="image" class="delete_rider" src="/static/img/close_grey.png">
+                </form>
             </div>
         {% endfor %}
     </div>

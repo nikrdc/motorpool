@@ -227,8 +227,25 @@ def delete_driver(event_token, driver_id):
     driver = Driver.query.get(driver_id)
     if driver in event.drivers:
         db.session.delete(driver)
+        riders = driver.riders
+        for rider in driver.riders:
+            db.session.delete(rider)
         db.session.commit()
         return redirect(url_for('show_event', event_token = event_token))
+    else:
+        abort(404)
+
+
+@app.route('/<event_token>/<driver_id>/<rider_id>/delete', methods = ['POST'])
+def delete_rider(event_token, driver_id, rider_id):
+    event = Event.query.get(find(event_token))
+    driver = Driver.query.get(driver_id)
+    rider = Rider.query.get(rider_id)
+    if driver in event.drivers and rider in driver.riders:
+        db.session.delete(rider)
+        db.session.commit()
+        return redirect(url_for('show_driver', event_token = event_token,
+                                driver_id = driver_id))
     else:
         abort(404)
 
