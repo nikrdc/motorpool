@@ -1,5 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Ride there with {{ driver.name }}{% endblock %}
+{% block title %}Ride 
+    {% if driver.going_there %}
+        there
+    {% else %}
+        back
+    {% endif %}
+with {{ driver.name }}{% endblock %}
 {% block body %}
 <script>
     $(document).ready(function() {
@@ -15,9 +21,17 @@
     });
 </script>
 
-<div class="title" id="driver_title">Ride there with {{ driver.name }}</div>
+<div class="title" id="driver_title">
+    Ride 
+    {% if driver.going_there %}
+        there
+    {% else %}
+        back
+    {% endif %}
+    with {{ driver.name }}
+</div>
 
-<form action="{{ url_for('delete_driver', event_token = event_token, driver_id = driver.id) }}" method="POST">
+<form id="delete_driver_form" action="{{ url_for('delete_driver', event_token = event_token, driver_id = driver.id) }}" method="POST">
     <input type="submit" id="delete_button" value="Delete ride"/>
 </form>
 
@@ -34,6 +48,8 @@
             </div>
         {% endfor %}
     </div>
+{% else %}
+    <div id="no_riders"></div>
 {% endif %}
 
 <div id="driver_info">
@@ -44,6 +60,8 @@
         {{ form.name() }}<br>
         {{ form.phone.label }}<br>
         {{ form.phone() }}<br>
+        {{ form.email.label }}<br>
+        {{ form.email() }}<br>
         {{ form.capacity.label }}<br>
         {{ form.capacity() }}<br>
         {{ form.car_color.label }}<br>

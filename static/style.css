@@ -363,6 +363,7 @@ a {
 .rider_card {
     background-color: #eee;
     padding: 12px;
+    height: 43px;
     margin: 0 0 10px 0;
     color: #393939;
     -webkit-transition: all 0.2s;
@@ -390,6 +391,11 @@ a {
     margin: -40px 5px 0 0;
 }
 
+#delete_driver_form {
+    width: 130px;
+    margin: 0 auto; 
+}
+
 #delete_button {
     background-color: #cc7979;
     border: none;
@@ -400,7 +406,7 @@ a {
     color: #911313;
     font-size: 13px;
     text-align: center;
-    margin: 38px auto 51px auto;
+    margin: 8px auto 24 auto;
 }
 
 #delete_button:hover {
@@ -412,5 +418,9 @@ a {
     transition: all 0.2s;
     cursor: pointer;
     text-align: center;
+}
+
+#no_riders {
+    margin: -23px 0 0 0;
 }
 

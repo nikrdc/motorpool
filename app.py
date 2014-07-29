@@ -6,10 +6,12 @@ from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
 from wtforms import StringField, SelectMultipleField, IntegerField, \
                     DateTimeField, SubmitField, widgets
-from wtforms.validators import Length, Required, NumberRange
+from wtforms.validators import Length, Required, NumberRange, Email, AnyOf
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.moment import Moment
+from threading import Thread
+from flask.ext.mail import Mail, Message
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -19,11 +21,18 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'substitute key'
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 manager = Manager(app)
 moment = Moment(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+mail = Mail(app)
 
 def make_shell_context():
     return dict(app=app, db=db, Event=Event, Driver=Driver, Rider=Rider)
@@ -50,6 +59,7 @@ class Driver(db.Model):
     going_there = db.Column(db.Boolean) 
     name = db.Column(db.String(64))
     phone = db.Column(db.String(64))
+    email = db.Column(db.String(64))
     capacity = db.Column(db.Integer)
     car_color = db.Column(db.String(64))
     make_model = db.Column(db.String(64))
@@ -68,6 +78,7 @@ class Rider(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
     phone = db.Column(db.String(64))
+    email = db.Column(db.String(64))
 
     driver_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
 
@@ -85,6 +96,7 @@ class EventForm(Form):
 class PersonForm(Form):
     name = StringField('Name')
     phone = StringField('Phone number')
+    email = StringField('Email address', validators = [Email()])
     capacity = IntegerField('Total car capacity (including driver)')
     car_color = StringField('Car color')
     make_model = StringField('Car make and model')
@@ -97,13 +109,32 @@ class PersonForm(Form):
         widget = widgets.ListWidget(prefix_label=False))
     
     leaving_from = StringField('Location leaving from')
-    leaving_at = DateTimeField('Time departing at')
+    leaving_at = DateTimeField('Time departing at', 
+                               format = '%A %B %d, %I:%M %p')
 
     going_to = StringField('Location going to')
-    going_at = DateTimeField('Time departing at')
+    going_at = DateTimeField('Time departing at', 
+                             format = '%A %B %d, %I:%M %p')
 
     submit = SubmitField('Submit')
     save = SubmitField('Save info')
+
+
+# Email
+
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
+def send_email(to, subject, template, **kwargs):
+    msg = Message('Motorpool: ' + subject, sender = 'Motorpool', 
+                  recipients = [to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
+    thr = Thread(target = send_async_email, args = [app, msg])
+    thr.start()
+    return thr
 
 
 # Helpers
@@ -188,8 +219,7 @@ def show_event(event_token):
         return redirect(url_for('index'))
 
 
-#AHHAHAHJASHFJHASHSAHAHHAHHA (lol, a comment by alex)
-
+#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF 
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
@@ -219,6 +249,7 @@ def show_driver(event_token, driver_id):
                                    driver = driver, form = form)
     else:
         abort(404)
+#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF 
 
 
 @app.route('/<event_token>/<driver_id>/delete', methods = ['POST'])
@@ -227,9 +258,15 @@ def delete_driver(event_token, driver_id):
     driver = Driver.query.get(driver_id)
     if driver in event.drivers:
         db.session.delete(driver)
+        send_email(driver.email, 'Your ride has been deleted', 
+                   'mail/driver_deleted_driver', driver = driver, 
+                   event = event)
         riders = driver.riders
         for rider in driver.riders:
             db.session.delete(rider)
+            send_email(rider.email, 'A ride you were in has been deleted', 
+                       'mail/driver_deleted_rider', rider = rider,
+                       driver = driver, event = event)
         db.session.commit()
         return redirect(url_for('show_event', event_token = event_token))
     else:
@@ -243,6 +280,9 @@ def delete_rider(event_token, driver_id, rider_id):
     rider = Rider.query.get(rider_id)
     if driver in event.drivers and rider in driver.riders:
         db.session.delete(rider)
+        send_email(rider.email, 'You have been deleted from a ride', 
+                   'mail/rider_deleted_rider', rider = rider,
+                   driver = driver, event = event)
         db.session.commit()
         return redirect(url_for('show_driver', event_token = event_token,
                                 driver_id = driver_id))
@@ -250,6 +290,7 @@ def delete_rider(event_token, driver_id, rider_id):
         abort(404)
 
 
+#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token):
     if find(event_token):
@@ -273,8 +314,7 @@ def add_driver(event_token):
             return render_template('add_driver.html', form = form)
     else:
         abort(404)
-
-#AHHAHAHJASHFJHASHSAHAHHAHHA
+#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF      
 
 
 @app.route('/<event_token>/<driver_id>/add', methods = ['GET', 'POST'])
@@ -287,6 +327,7 @@ def add_rider(event_token, driver_id):
             if form.validate_on_submit():
                 rider = Rider(name = form.name.data,
                               phone = form.phone.data,
+                              email = form.email.data,
                               driver = driver)
                 db.session.add(rider)
                 db.session.commit()

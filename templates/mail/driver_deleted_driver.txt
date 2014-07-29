@@ -1,0 +1,1 @@
+Hello {{ driver.name }}. Your ride{% if driver.going_there %} going to {% else %} coming from {% endif %}the event {{ event.name }} has been deleted.
