@@ -26,8 +26,8 @@
                                 <div class="linebreak"></div>
 
                                 <div class="descriptor">Departure time</div>
-                                <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
-                                <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
+                                <div class="date">{{ driver.datetime.strftime('%A %B %-d') }}</div>
+                                <div class="time">{{ driver.datetime.strftime('%-I:%M %p') }}</div>
 
                                 <div class="descriptor">Leaving from</div>
                                 <div class="location">{{ driver.location }}</div>
@@ -65,8 +65,8 @@
                                 <div class="linebreak"></div>
 
                                 <div class="descriptor">Departure time</div>
-                                <div class="date">{{ moment(driver.datetime).format('dddd MMMM D') }}</div>
-                                <div class="time">{{ moment(driver.datetime).format('LT') }}</div>
+                                <div class="date">{{ driver.datetime.strftime('%A %B %-d') }}</div>
+                                <div class="time">{{ driver.datetime.strftime('%-I:%M %p') }}</div>
 
                                 <div class="descriptor">Leaving from</div>
                                 <div class="location">{{ driver.location }}</div>

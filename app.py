@@ -5,11 +5,11 @@ from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
 from wtforms import StringField, SelectMultipleField, IntegerField, \
-                    DateTimeField, SubmitField, widgets
+                    SubmitField, widgets
+from wtforms.ext.dateutil.fields import DateTimeField
 from wtforms.validators import Length, Required, NumberRange, Email, AnyOf
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
-from flask.ext.moment import Moment
 from threading import Thread
 from flask.ext.mail import Mail, Message
 
@@ -17,19 +17,18 @@ from flask.ext.mail import Mail, Message
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'substitute key'
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
-app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 manager = Manager(app)
-moment = Moment(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
@@ -94,8 +93,8 @@ class EventForm(Form):
 
 
 class PersonForm(Form):
-    name = StringField('Name')
-    phone = StringField('Phone number')
+    name = StringField('Name', validators = [Required()])
+    phone = StringField('Phone number', validators = [Required()])
     email = StringField('Email address', validators = [Email()])
     capacity = IntegerField('Total car capacity (including driver)')
     car_color = StringField('Car color')
@@ -110,11 +109,11 @@ class PersonForm(Form):
     
     leaving_from = StringField('Location leaving from')
     leaving_at = DateTimeField('Time departing at', 
-                               format = '%A %B %d, %I:%M %p')
+                               display_format = '%m/%d/%Y, %I:%M %p')
 
     going_to = StringField('Location going to')
     going_at = DateTimeField('Time departing at', 
-                             format = '%A %B %d, %I:%M %p')
+                             display_format = '%m/%d/%Y, %I:%M %p')
 
     submit = SubmitField('Submit')
     save = SubmitField('Save info')
@@ -194,7 +193,6 @@ def index():
     if form.validate_on_submit():
         event = Event(name = form.name.data)
         db.session.add(event)
-        db.session.commit()
         event_token = generate_token(event)
         flash('Share this page\'s URL with other attendees!')
         return redirect(url_for('show_event', event_token = event_token))
@@ -231,7 +229,8 @@ def show_driver(event_token, driver_id):
                           going_at = driver.datetime)
         if form.validate_on_submit():
             driver.name = form.name.data
-            driver.phone = form.phone.data,
+            driver.phone = form.phone.data
+            driver.email = form.email.data
             driver.capacity = form.capacity.data
             driver.car_color = form.car_color.data
             driver.make_model = form.make_model.data
@@ -242,7 +241,6 @@ def show_driver(event_token, driver_id):
                 driver.location = form.going_to.data
                 driver.datetime = form.going_at.data
             db.session.add(driver)
-            db.session.commit()
             return redirect(url_for('show_event', event_token = event_token))
         else:
             return render_template('driver.html', event_token = event_token,
@@ -267,7 +265,6 @@ def delete_driver(event_token, driver_id):
             send_email(rider.email, 'A ride you were in has been deleted', 
                        'mail/driver_deleted_rider', rider = rider,
                        driver = driver, event = event)
-        db.session.commit()
         return redirect(url_for('show_event', event_token = event_token))
     else:
         abort(404)
@@ -283,7 +280,6 @@ def delete_rider(event_token, driver_id, rider_id):
         send_email(rider.email, 'You have been deleted from a ride', 
                    'mail/rider_deleted_rider', rider = rider,
                    driver = driver, event = event)
-        db.session.commit()
         return redirect(url_for('show_driver', event_token = event_token,
                                 driver_id = driver_id))
     else:
@@ -307,8 +303,7 @@ def add_driver(event_token):
                 driver = create_driver(form, directions[0], event)
                 db.session.add(driver)
             else:
-                return False
-            db.session.commit()
+                abort(500)
             return redirect(url_for('show_event', event_token = event_token))
         else:
             return render_template('add_driver.html', form = form)
@@ -330,7 +325,6 @@ def add_rider(event_token, driver_id):
                               email = form.email.data,
                               driver = driver)
                 db.session.add(rider)
-                db.session.commit()
                 return redirect(url_for('show_event', 
                                         event_token = event_token))
             else:
