@@ -6,7 +6,7 @@ from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
 from wtforms import StringField, SelectMultipleField, IntegerField, \
                     SubmitField, widgets
-from wtforms.ext.dateutil.fields import DateTimeField
+from dateutil import parser
 from wtforms.validators import Length, Required, NumberRange, Email, AnyOf
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -108,12 +108,10 @@ class PersonForm(Form):
         widget = widgets.ListWidget(prefix_label=False))
     
     leaving_from = StringField('Location leaving from')
-    leaving_at = DateTimeField('Time departing at', 
-                               display_format = '%m/%d/%Y, %I:%M %p')
+    leaving_at = StringField('Time departing at')
 
     going_to = StringField('Location going to')
-    going_at = DateTimeField('Time departing at', 
-                             display_format = '%m/%d/%Y, %I:%M %p')
+    going_at = StringField('Time departing at')
 
     submit = SubmitField('Submit')
     save = SubmitField('Save info')
@@ -150,28 +148,6 @@ def find(token):
         return False
     return data
 
-def create_driver(form, direction, event):
-    if direction == 'driving_there':
-        direction_filler = True
-        location_filler = 'leaving_from'
-        datetime_filler = 'leaving_at'
-    elif direction == 'driving_back':
-        direction_filler = False
-        location_filler = 'going_to'
-        datetime_filler = 'going_at'
-    else:
-        return False
-    driver = Driver(going_there = direction_filler,
-                    name = form.name.data,
-                    phone = form.phone.data,
-                    capacity = form.capacity.data,
-                    car_color = form.car_color.data,
-                    make_model = form.make_model.data,
-                    location = getattr(form, location_filler).data,
-                    datetime = getattr(form, datetime_filler).data,
-                    event = event)
-    return driver
-
 
 # Errors
 
@@ -193,6 +169,7 @@ def index():
     if form.validate_on_submit():
         event = Event(name = form.name.data)
         db.session.add(event)
+        db.session.commit()
         event_token = generate_token(event)
         flash('Share this page\'s URL with other attendees!')
         return redirect(url_for('show_event', event_token = event_token))
@@ -217,7 +194,6 @@ def show_event(event_token):
         return redirect(url_for('index'))
 
 
-#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF 
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
@@ -247,7 +223,6 @@ def show_driver(event_token, driver_id):
                                    driver = driver, form = form)
     else:
         abort(404)
-#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF 
 
 
 @app.route('/<event_token>/<driver_id>/delete', methods = ['POST'])
@@ -309,7 +284,30 @@ def add_driver(event_token):
             return render_template('add_driver.html', form = form)
     else:
         abort(404)
-#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF      
+#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF  
+
+
+def create_driver(form, direction, event):
+    if direction == 'driving_there':
+        direction_filler = True
+        location_filler = 'leaving_from'
+        datetime_filler = 'leaving_at'
+    elif direction == 'driving_back':
+        direction_filler = False
+        location_filler = 'going_to'
+        datetime_filler = 'going_at'
+    else:
+        return False
+    driver = Driver(going_there = direction_filler,
+                    name = form.name.data,
+                    phone = form.phone.data,
+                    capacity = form.capacity.data,
+                    car_color = form.car_color.data,
+                    make_model = form.make_model.data,
+                    location = getattr(form, location_filler).data,
+                    datetime = parser.parse(getattr(form, datetime_filler).data),
+                    event = event)
+    return driver    
 
 
 @app.route('/<event_token>/<driver_id>/add', methods = ['GET', 'POST'])
