@@ -148,6 +148,29 @@ def find(token):
         return False
     return data
 
+def create_driver(form, direction, event):
+    if direction == 'driving_there':
+        direction_filler = True
+        location_filler = 'leaving_from'
+        datetime_filler = 'leaving_at'
+    elif direction == 'driving_back':
+        direction_filler = False
+        location_filler = 'going_to'
+        datetime_filler = 'going_at'
+    else:
+        return False
+    driver = Driver(going_there = direction_filler,
+                    name = form.name.data,
+                    phone = form.phone.data,
+                    email = form.email.data,
+                    capacity = form.capacity.data,
+                    car_color = form.car_color.data,
+                    make_model = form.make_model.data,
+                    location = getattr(form, location_filler).data,
+                    datetime = parser.parse(getattr(form, datetime_filler).data),
+                    event = event)
+    return driver  
+
 
 # Errors
 
@@ -179,7 +202,7 @@ def index():
 
 @app.route('/<event_token>')
 def show_event(event_token):
-    if find(event_token):
+    if Event.query.get(find(event_token)):
         event = Event.query.get(find(event_token))
         rides_there = [driver for driver in event.drivers.all() if \
                        driver.going_there == True]
@@ -196,31 +219,36 @@ def show_event(event_token):
 
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
-    event = Event.query.get(find(event_token))
-    driver = Driver.query.get(driver_id)
-    if driver in event.drivers:
-        form = PersonForm(obj = driver, leaving_from = driver.location,
-                          leaving_at = driver.datetime, 
-                          going_to = driver.location,
-                          going_at = driver.datetime)
-        if form.validate_on_submit():
-            driver.name = form.name.data
-            driver.phone = form.phone.data
-            driver.email = form.email.data
-            driver.capacity = form.capacity.data
-            driver.car_color = form.car_color.data
-            driver.make_model = form.make_model.data
-            if driver.going_there:
-                driver.location = form.leaving_from.data
-                driver.datetime = form.leaving_at.data
+    if Event.query.get(find(event_token)):
+        event = Event.query.get(find(event_token))
+        driver = Driver.query.get(driver_id)
+        if driver in event.drivers:
+            form = PersonForm(obj = driver, leaving_from = driver.location,
+                leaving_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'), 
+                going_to = driver.location,
+                going_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'))
+            if form.validate_on_submit():
+                driver.name = form.name.data
+                driver.phone = form.phone.data
+                driver.email = form.email.data
+                driver.capacity = form.capacity.data
+                driver.car_color = form.car_color.data
+                driver.make_model = form.make_model.data
+                if driver.going_there:
+                    driver.location = form.leaving_from.data
+                    driver.datetime = parser.parse(form.leaving_at.data)
+                else:
+                    driver.location = form.going_to.data
+                    driver.datetime = parser.parse(form.going_at.data)
+                db.session.add(driver)
+                return redirect(url_for('show_event', 
+                                        event_token = event_token))
             else:
-                driver.location = form.going_to.data
-                driver.datetime = form.going_at.data
-            db.session.add(driver)
-            return redirect(url_for('show_event', event_token = event_token))
+                return render_template('driver.html', 
+                                       event_token = event_token,
+                                       driver = driver, form = form)
         else:
-            return render_template('driver.html', event_token = event_token,
-                                   driver = driver, form = form)
+            abort(404)
     else:
         abort(404)
 
@@ -261,10 +289,9 @@ def delete_rider(event_token, driver_id, rider_id):
         abort(404)
 
 
-#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token):
-    if find(event_token):
+    if Event.query.get(find(event_token)):
         form = PersonForm()
         event = Event.query.get(find(event_token))
         if form.validate_on_submit():
@@ -284,54 +311,34 @@ def add_driver(event_token):
             return render_template('add_driver.html', form = form)
     else:
         abort(404)
-#HJSDHFJDSFDSF #HJSDHFJDSFDSF #HJSDHFJDSFDSF  
-
-
-def create_driver(form, direction, event):
-    if direction == 'driving_there':
-        direction_filler = True
-        location_filler = 'leaving_from'
-        datetime_filler = 'leaving_at'
-    elif direction == 'driving_back':
-        direction_filler = False
-        location_filler = 'going_to'
-        datetime_filler = 'going_at'
-    else:
-        return False
-    driver = Driver(going_there = direction_filler,
-                    name = form.name.data,
-                    phone = form.phone.data,
-                    capacity = form.capacity.data,
-                    car_color = form.car_color.data,
-                    make_model = form.make_model.data,
-                    location = getattr(form, location_filler).data,
-                    datetime = parser.parse(getattr(form, datetime_filler).data),
-                    event = event)
-    return driver    
 
 
 @app.route('/<event_token>/<driver_id>/add', methods = ['GET', 'POST'])
 def add_rider(event_token, driver_id):
-    event = Event.query.get(find(event_token))
-    driver = Driver.query.get(driver_id)
-    if driver in event.drivers:
-        if len(driver.riders.all()) < driver.capacity - 1:
-            form = PersonForm()
-            if form.validate_on_submit():
-                rider = Rider(name = form.name.data,
-                              phone = form.phone.data,
-                              email = form.email.data,
-                              driver = driver)
-                db.session.add(rider)
+    if Event.query.get(find(event_token)):
+        event = Event.query.get(find(event_token))
+        driver = Driver.query.get(driver_id)
+        if driver in event.drivers:
+            if len(driver.riders.all()) < driver.capacity - 1:
+                form = PersonForm()
+                if form.validate_on_submit():
+                    rider = Rider(name = form.name.data,
+                                  phone = form.phone.data,
+                                  email = form.email.data,
+                                  driver = driver)
+                    db.session.add(rider)
+                    return redirect(url_for('show_event', 
+                                            event_token = event_token))
+                else:
+                    return render_template('add_rider.html', form = form, 
+                                           driver = driver,
+                                           event_token = event_token)
+            else:
+                flash('There isn\'t any space left on that ride!')
                 return redirect(url_for('show_event', 
                                         event_token = event_token))
-            else:
-                return render_template('add_rider.html', form = form, 
-                                       driver = driver,
-                                       event_token = event_token)
         else:
-            flash('There isn\'t any space left on that ride!')
-            return redirect(url_for('show_event', event_token = event_token))
+            abort(404)
     else:
         abort(404)
 

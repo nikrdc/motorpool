@@ -72,12 +72,12 @@ with {{ driver.name }}{% endblock %}
             {{ form.leaving_from.label }}<br>
             {{ form.leaving_from() }}<br>
             {{ form.leaving_at.label }}<br>
-            {{ form.leaving_at() }}<br>
+            {{ form.leaving_at(placeholder="October 24 2003, 4:05 PM") }}<br>
         {% else %}
             {{ form.going_to.label }}<br>
             {{ form.going_to() }}<br>
             {{ form.going_at.label }}<br>
-            {{ form.going_at() }}<br>
+            {{ form.going_at(placeholder="October 24 2003, 4:05 PM") }}<br>
         {% endif %}
         <div class="submit_button">{{ form.save() }}</div>
     </form>
