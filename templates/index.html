@@ -12,6 +12,11 @@
     {{ form.csrf_token }}
     {{ form.name.label }}<br>
     {{ form.name() }}<br>
+    {% if form.name.errors %}
+        {% for error in form.name.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     <div class="submit_button">{{ form.submit() }}</div>
 </form>
 {% endblock %}

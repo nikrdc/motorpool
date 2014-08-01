@@ -7,6 +7,7 @@
     {% endif %}
 with {{ driver.name }}{% endblock %}
 {% block body %}
+
 <script>
     $(document).ready(function() {
         $('.delete_rider').hover(function() {
@@ -20,6 +21,14 @@ with {{ driver.name }}{% endblock %}
         });
     });
 </script>
+
+{% if get_flashed_messages() %}
+<div id="event_flashed_messages" class="flash">
+    {% for message in get_flashed_messages() %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
 
 <div class="title" id="driver_title">
     Ride 
@@ -53,31 +62,69 @@ with {{ driver.name }}{% endblock %}
 {% endif %}
 
 <div id="driver_info">
-    <div class="header">Info</div>
+    <div class="header">Driver info</div>
     <form method="POST" class="form" class="new_item">
         {{ form.csrf_token }}
         {{ form.name.label }}<br>
         {{ form.name() }}<br>
+        {% if form.name.errors %}
+            {% for error in form.name.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {{ form.phone.label }}<br>
         {{ form.phone() }}<br>
+        {% if form.phone.errors %}
+            {% for error in form.phone.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {{ form.email.label }}<br>
         {{ form.email() }}<br>
+        {% if form.email.errors %}
+            {% for error in form.email.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {{ form.capacity.label }}<br>
         {{ form.capacity() }}<br>
+        {% if form.capacity.errors %}
+            <div class="error">{{ form.capacity.errors[-1] }}</div>
+        {% endif %}
         {{ form.car_color.label }}<br>
         {{ form.car_color() }}<br>
+        {% if form.car_color.errors %}
+            {% for error in form.car_color.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {{ form.make_model.label }}<br>
         {{ form.make_model() }}<br>
+        {% if form.make_model.errors %}
+            {% for error in form.make_model.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {% if driver.going_there %}
             {{ form.leaving_from.label }}<br>
             {{ form.leaving_from() }}<br>
             {{ form.leaving_at.label }}<br>
             {{ form.leaving_at(placeholder="October 24 2003, 4:05 PM") }}<br>
+            {% if form.leaving_at.errors %}
+                {% for error in form.leaving_at.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
         {% else %}
             {{ form.going_to.label }}<br>
             {{ form.going_to() }}<br>
             {{ form.going_at.label }}<br>
             {{ form.going_at(placeholder="October 24 2003, 4:05 PM") }}<br>
+            {% if form.going_at.errors %}
+                {% for error in form.going_at.errors %}
+                    <div class="error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
         {% endif %}
         <div class="submit_button">{{ form.save() }}</div>
     </form>

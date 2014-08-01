@@ -1,17 +1,19 @@
 import os
 from flask import Flask, render_template, redirect, session, redirect, \
-				  url_for, abort, flash
+				  url_for, abort, flash, g
 from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
 from wtforms import StringField, SelectMultipleField, IntegerField, \
                     SubmitField, widgets
 from dateutil import parser
-from wtforms.validators import Length, Required, NumberRange, Email, AnyOf
+from wtforms.validators import Length, Required, Email, ValidationError, \
+                               NumberRange
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from threading import Thread
 from flask.ext.mail import Mail, Message
+from datetime import datetime
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -88,33 +90,64 @@ class Rider(db.Model):
 # Forms
 
 class EventForm(Form):
-    name = StringField('Event name', validators = [Required()])
+    name = StringField('Event name', validators = [Required(message = 'An\
+                       event name is required!')])
     submit = SubmitField('Create')
 
 
-class PersonForm(Form):
-    name = StringField('Name', validators = [Required()])
-    phone = StringField('Phone number', validators = [Required()])
-    email = StringField('Email address', validators = [Email()])
-    capacity = IntegerField('Total car capacity (including driver)')
-    car_color = StringField('Car color')
-    make_model = StringField('Car make and model')
-    
+class DriverForm(Form):
+    name = StringField('Name', validators = [Required(message = 'A name is \
+                       required.')])
+    phone = StringField('Phone number', validators = [Required(message = 'A \
+                        phone number is required.')])
+    email = StringField('Email address', validators = [Email(message = 'This \
+                        email address is invalid.'), Required(message = 'An \
+                        email address is required.')])
+    capacity = IntegerField('Total car capacity (including driver)',
+                            validators = [NumberRange(1, 10), Required( 
+                            message = 'The car capacity is required.')])
+    def validate_capacity(form, field):
+        if hasattr(g, 'driver'):
+            if field.data < len(g.driver.riders.all()) + 1:
+                raise ValidationError('The capacity cannot be less than the \
+                                      total of the riders and driver.')
+    car_color = StringField('Car color', validators = [Required(message = 'A \
+                            car color is required.')])
+    make_model = StringField('Car make and model', 
+                             validators = [Required(message = 'A car make and \
+                             model is required.')])
     directions = SelectMultipleField(
         'Which direction(s) are you travelling in?',
-        choices=[('driving_there', 'I am driving there'), 
+        choices=[('driving_there', 'I am driving there'),
                  ('driving_back', 'I am driving back')],
         option_widget=widgets.CheckboxInput(),
         widget = widgets.ListWidget(prefix_label=False))
-    
     leaving_from = StringField('Location leaving from')
     leaving_at = StringField('Time departing at')
-
+    def validate_leaving_at(form, field):
+        if field.data:
+            if parser.parse(field.data) < datetime.now():
+                raise ValidationError('Time travelling is not permitted (yet).\
+                                       Please enter a time in the future.')
     going_to = StringField('Location going to')
     going_at = StringField('Time departing at')
-
+    def validate_going_at(form, field):
+        if field.data:
+            if parser.parse(field.data) < datetime.now():
+                raise ValidationError('Time travelling is not permitted (yet).\
+                                       Please enter a time in the future.')
     submit = SubmitField('Submit')
     save = SubmitField('Save info')
+
+
+class RiderForm(Form):
+    name = StringField('Name', validators = [Required(message = 'A name is\
+                       required.')])
+    phone = StringField('Phone number', validators = [Required(message = 'A \
+                        phone number is required.')])
+    email = StringField('Email address', validators = [Email(message='This \
+                        email address is invalid.')])
+    submit = SubmitField('Submit')
 
 
 # Email
@@ -160,15 +193,15 @@ def create_driver(form, direction, event):
     else:
         return False
     driver = Driver(going_there = direction_filler,
-                    name = form.name.data,
-                    phone = form.phone.data,
-                    email = form.email.data,
-                    capacity = form.capacity.data,
-                    car_color = form.car_color.data,
-                    make_model = form.make_model.data,
-                    location = getattr(form, location_filler).data,
-                    datetime = parser.parse(getattr(form, datetime_filler).data),
-                    event = event)
+                name = form.name.data,
+                phone = form.phone.data,
+                email = form.email.data,
+                capacity = form.capacity.data,
+                car_color = form.car_color.data,
+                make_model = form.make_model.data,
+                location = getattr(form, location_filler).data,
+                datetime = parser.parse(getattr(form, datetime_filler).data),
+                event = event)
     return driver  
 
 
@@ -213,8 +246,7 @@ def show_event(event_token):
                                rides_there = rides_there,
                                rides_back = rides_back)
     else:
-        flash('The event you\'re looking for doesn\'t exist!')
-        return redirect(url_for('index'))
+        abort(404)
 
 
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
@@ -223,10 +255,11 @@ def show_driver(event_token, driver_id):
         event = Event.query.get(find(event_token))
         driver = Driver.query.get(driver_id)
         if driver in event.drivers:
-            form = PersonForm(obj = driver, leaving_from = driver.location,
+            form = DriverForm(obj = driver, leaving_from = driver.location,
                 leaving_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'), 
                 going_to = driver.location,
                 going_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'))
+            g.driver = driver
             if form.validate_on_submit():
                 driver.name = form.name.data
                 driver.phone = form.phone.data
@@ -292,7 +325,7 @@ def delete_rider(event_token, driver_id, rider_id):
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token):
     if Event.query.get(find(event_token)):
-        form = PersonForm()
+        form = DriverForm()
         event = Event.query.get(find(event_token))
         if form.validate_on_submit():
             directions = form.directions.data
@@ -320,7 +353,7 @@ def add_rider(event_token, driver_id):
         driver = Driver.query.get(driver_id)
         if driver in event.drivers:
             if len(driver.riders.all()) < driver.capacity - 1:
-                form = PersonForm()
+                form = RiderForm()
                 if form.validate_on_submit():
                     rider = Rider(name = form.name.data,
                                   phone = form.phone.data,

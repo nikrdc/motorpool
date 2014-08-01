@@ -33,11 +33,26 @@
 <form method="POST" class="form">
     {{ form.csrf_token }}
     {{ form.name.label }}<br>
-    {{ form.name() }}<br>
+    {{ form.name(placeholder="Penelope Wiggums") }}<br>
+    {% if form.name.errors %}
+        {% for error in form.name.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.phone.label }}<br>
-    {{ form.phone() }}<br>
+    {{ form.phone(placeholder="(202) 418 - 2332") }}<br>
+    {% if form.phone.errors %}
+        {% for error in form.phone.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.email.label }}<br>
-    {{ form.email() }}<br>
+    {{ form.email(placeholder="pwiggums@earthlink.net") }}<br>
+    {% if form.email.errors %}
+        {% for error in form.email.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     <div class="submit_button">{{ form.submit() }}</div>
 </form>
 {% endblock %}

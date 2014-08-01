@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{{ event.name }}{% endblock %}
 {% block body %}
+<script>
+    $(document).ready(function() {
+        $('.ve_driver_hover').hide();
+
+        $('.the_choice_driver').hover(function() {
+            $(this.children[1]).fadeIn(200);
+        }, function() {
+            $(this.children[1]).fadeOut(200);
+        })
+    });
+</script>
+
 {% if get_flashed_messages() %}
 <div id="event_flashed_messages" class="flash">
     {% for message in get_flashed_messages() %}
@@ -23,6 +35,7 @@
                         <div class="driver_card">
                             <div class="the_choice_driver">
                                 <div class="driver_name">{{ driver.name }}</div>
+                                <div class="ve_driver_hover">View/edit</div>
                                 <div class="linebreak"></div>
 
                                 <div class="descriptor">Departure time</div>
@@ -62,6 +75,7 @@
                         <div class="driver_card">
                             <div class="the_choice_driver">
                                 <div class="driver_name">{{ driver.name }}</div>
+                                <div class="ve_driver_hover">View/edit</div>
                                 <div class="linebreak"></div>
 
                                 <div class="descriptor">Departure time</div>

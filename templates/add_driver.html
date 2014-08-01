@@ -2,45 +2,78 @@
 {% block title %}Join as a driver{% endblock %}
 {% block body %}
 <script>
-    var setSubmit = function(first_check, second_check) {
-        if (first_check || second_check){
-            $('.submit_button').slideDown(400);
-        } else {
-            $('.submit_button').slideUp(200);
-        }
-    }
-
     $(document).ready(function() {
-        $('#ride_there').hide();
-        $('#ride_back').hide();
-        $('.submit_button').hide()
-
+        var $checkbox0 = $('#directions-0');
+        var $checkbox1 = $('#directions-1');
+        var $submit_button = $('.submit_button');
+        var $ride_there = $('#ride_there');
+        var $ride_back = $('#ride_back');
         var first_check = false;
         var second_check = false;
 
-        $('#directions-0').change(function() {
+        var setSubmitSlide = function(first_check, second_check) {
+            if (first_check || second_check){
+                $submit_button.slideDown(400);
+            } else {
+                $submit_button.slideUp(200);
+            }
+        }
+
+        var setSubmitHide = function(first_check, second_check) {
+            if (first_check || second_check){
+                $submit_button.show();
+            } else {
+                $submit_button.hide();
+            }
+        }
+        
+        $checkbox0.each(function() {
             if (this.checked) {
-                first_check = true
-                setSubmit(first_check, second_check);
-                $('#ride_there').slideDown(400)
+                first_check = true;
+                $ride_there.show();
+                setSubmitHide(first_check, second_check);
             } else {
                 first_check = false;
-                setSubmit(first_check, second_check)
-                $('#ride_there').slideUp(200)
+                $ride_there.hide();
+                setSubmitHide(first_check, second_check);
             }
         });
 
-        $('#directions-1').change(function() {
+        $checkbox1.each(function() {
             if (this.checked) {
                 second_check = true;
-                setSubmit(first_check, second_check);
-                $('#ride_back').slideDown(400)
+                $ride_back.show();
+                setSubmitHide(first_check, second_check);
             } else {
                 second_check = false;
-                setSubmit(first_check, second_check);
-                $('#ride_back').slideUp(200)
+                $ride_back.hide();
+                setSubmitHide(first_check, second_check);
             }
-        })
+        });
+
+        $checkbox0.change(function() {
+            if (this.checked) {
+                first_check = true;
+                $ride_there.slideDown(400);
+                setSubmitSlide(first_check, second_check);
+            } else {
+                first_check = false;
+                $ride_there.slideUp(200);
+                setSubmitSlide(first_check, second_check);
+            }
+        });
+
+        $checkbox1.change(function() {
+            if (this.checked) {
+                second_check = true;
+                $ride_back.slideDown(400)
+                setSubmitSlide(first_check, second_check);
+            } else {
+                second_check = false;
+                $ride_back.slideUp(200)
+                setSubmitSlide(first_check, second_check);
+            }
+        });
     });
 </script>
 
@@ -49,34 +82,72 @@
 <form method="POST" class="form" class="new_item">
     {{ form.csrf_token }}
     {{ form.name.label }}<br>
-    {{ form.name() }}<br>
+    {{ form.name(placeholder="Ronald Wiggums") }}<br>
+    {% if form.name.errors %}
+        {% for error in form.name.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.phone.label }}<br>
-    {{ form.phone() }}<br>
+    {{ form.phone(placeholder="(202) 333 - 1605") }}<br>
+    {% if form.phone.errors %}
+        {% for error in form.phone.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.email.label }}<br>
-    {{ form.email() }}<br>
+    {{ form.email(placeholder="rwiggums@earthlink.net") }}<br>
+    {% if form.email.errors %}
+        {% for error in form.email.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.capacity.label }}<br>
-    {{ form.capacity() }}<br>
+    {{ form.capacity(placeholder="5") }}<br>
+    {% if form.capacity.errors %}
+        <div class="error">{{ form.capacity.errors[-1] }}</div>
+    {% endif %}
     {{ form.car_color.label }}<br>
-    {{ form.car_color() }}<br>
+    {{ form.car_color(placeholder="blue") }}<br>
+    {% if form.car_color.errors %}
+        {% for error in form.car_color.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.make_model.label }}<br>
-    {{ form.make_model() }}<br>
+    {{ form.make_model(placeholder="Ford Anglia") }}<br>
+    {% if form.make_model.errors %}
+        {% for error in form.make_model.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
     {{ form.directions.label }}<br>
     {{ form.directions() }}<br>
 
     <div id="ride_there">
         <div class="header">Ride there</div>
         {{ form.leaving_from.label }}<br>
-        {{ form.leaving_from() }}<br>
+        {{ form.leaving_from(placeholder="New York office") }}<br>
         {{ form.leaving_at.label }}<br>
-        {{ form.leaving_at(placeholder="October 24 2003, 4:05 PM") }}<br>
+        {{ form.leaving_at(placeholder="October 24 2003, 12:35 PM") }}<br>
+        {% if form.leaving_at.errors %}
+            {% for error in form.leaving_at.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
     </div>
 
     <div id="ride_back">
         <div class="header">Ride back</div>
         {{ form.going_to.label }}<br>
-        {{ form.going_to() }}<br>
+        {{ form.going_to(placeholder="London office") }}<br>
         {{ form.going_at.label }}<br>
         {{ form.going_at(placeholder="October 24 2003, 4:05 PM") }}<br>
+        {% if form.going_at.errors %}
+            {% for error in form.going_at.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
     </div>
 
     <div class="submit_button">{{ form.submit() }}</div>
