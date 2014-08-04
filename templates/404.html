@@ -3,5 +3,5 @@
 {% block title %}Motorpool - 404{% endblock %}
 
 {% block body %}
-<img class="error_image" src="/static/img/404.png">
+<img class="error_image" src="{{ url_for('static', filename='img/404.png') }}">
 {% endblock %}

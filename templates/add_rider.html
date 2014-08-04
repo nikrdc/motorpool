@@ -15,7 +15,7 @@
 
 <div class="title">Join this ride</div>
 
-<a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id, _external=True) }}">
+<a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id) }}">
     <div class="driver_card" id="join_driver_card">
         <div class="the_choice_driver">
             <div class="driver_name">{{ driver.name }}</div>

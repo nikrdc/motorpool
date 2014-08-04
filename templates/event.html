@@ -23,7 +23,7 @@
 
 <div class="title">{{ event.name }}</div>
 
-<a href="{{ url_for('add_driver', event_token = event_token, _external=True) }}"><div id="driver_button">Join as a driver</div></a>
+<a href="{{ url_for('add_driver', event_token = event_token) }}"><div id="driver_button">Join as a driver</div></a>
 
 <div id="rides">
     {% if event.drivers.all() %}
@@ -31,7 +31,7 @@
             <div class="header">Rides there</div>
             {% if rides_there %}
                 {% for driver in rides_there %}
-                    <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id, _external=True) }}">
+                    <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id) }}">
                         <div class="driver_card">
                             <div class="the_choice_driver">
                                 <div class="driver_name">{{ driver.name }}</div>
@@ -57,7 +57,7 @@
                                 {% endif %}
                             </div>
                             {% if driver.riders.all()|length < (driver.capacity - 1) %}
-                                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id, _external=True) }}"><div class="rider_button">Join this ride</div></a>
+                                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id) }}"><div class="rider_button">Join this ride</div></a>
                             {% endif %}
                         </div>
                     </a>
@@ -71,7 +71,7 @@
             <div class="header">Rides back</div>
             {% if rides_back %}
                 {% for driver in rides_back %}
-                    <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id, _external=True) }}">
+                    <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id) }}">
                         <div class="driver_card">
                             <div class="the_choice_driver">
                                 <div class="driver_name">{{ driver.name }}</div>
@@ -97,7 +97,7 @@
                                 {% endif %}
                             </div>
                             {% if driver.riders.all()|length < (driver.capacity - 1) %}
-                                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id, _external=True) }}"><div class="rider_button">Join this ride</div></a>
+                                <a href="{{ url_for('add_rider', event_token = event_token, driver_id = driver.id) }}"><div class="rider_button">Join this ride</div></a>
                             {% endif %}
                         </div>
                     </a>

@@ -3,5 +3,5 @@
 {% block title %}Motorpool - 500{% endblock %}
 
 {% block body %}
-<img class="error_image" src="/static/img/500.png">
+<img class="error_image" src="{{ url_for('static', filename='img/500.png') }}">
 {% endblock %}
