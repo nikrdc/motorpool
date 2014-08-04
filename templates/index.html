@@ -6,7 +6,7 @@
         {{ message }}
     {% endfor %}
 </div>
-<div id="logo"><img src="/static/img/logo.png"></div>
+<div id="logo"><img src="{{ url_for('static', filename='img/logo.png') }}"></div>
 <div id="slogan">Organize carpools for your event:</div>
 <form method="POST" class="form">
     {{ form.csrf_token }}
