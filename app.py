@@ -274,6 +274,7 @@ def show_driver(event_token, driver_id):
                     driver.location = form.going_to.data
                     driver.datetime = parser.parse(form.going_at.data)
                 db.session.add(driver)
+                db.session.commit()
                 return redirect(url_for('show_event', 
                                         event_token = event_token))
             else:
@@ -301,6 +302,7 @@ def delete_driver(event_token, driver_id):
             send_email(rider.email, 'A ride you were in has been deleted', 
                        'mail/driver_deleted_rider', rider = rider,
                        driver = driver, event = event)
+        db.session.commit()
         return redirect(url_for('show_event', event_token = event_token))
     else:
         abort(404)
@@ -316,6 +318,7 @@ def delete_rider(event_token, driver_id, rider_id):
         send_email(rider.email, 'You have been deleted from a ride', 
                    'mail/rider_deleted_rider', rider = rider,
                    driver = driver, event = event)
+        db.session.commit()
         return redirect(url_for('show_driver', event_token = event_token,
                                 driver_id = driver_id))
     else:
@@ -339,6 +342,7 @@ def add_driver(event_token):
                 db.session.add(driver)
             else:
                 abort(500)
+            db.session.commit()
             return redirect(url_for('show_event', event_token = event_token))
         else:
             return render_template('add_driver.html', form = form)
@@ -360,6 +364,7 @@ def add_rider(event_token, driver_id):
                                   email = form.email.data,
                                   driver = driver)
                     db.session.add(rider)
+                    db.session.commit()
                     return redirect(url_for('show_event', 
                                             event_token = event_token))
                 else:
