@@ -111,7 +111,7 @@ body {
     width: 320px;
     margin: 0 auto 10px auto;
     font-family: 'WhitneyMedium';
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .driver_name {
@@ -130,7 +130,7 @@ body {
     text-transform: uppercase;
     font-family: 'WhitneySemibold';
     font-size: 12px;
-    margin: 0 0 0 17px;
+    margin: 0 0 0 5px;
     color: #595959;
     width: 105px;
     text-align: right;
@@ -141,20 +141,20 @@ body {
 }
 
 .date {
-    margin: -15px 0 0 140px;
+    margin: -15px 0 0 125px;
 }
 
 .time {
-    margin: 5px 0 18px 140px;
+    margin: 5px 0 18px 125px;
 }
 
 .location {
-    margin: -15px 0 0 140px;
+    margin: -15px 0 0 125px;
 }
  
 .driver_card ul {
     list-style-type: none;
-    margin: 5px 0 10px 100px;
+    margin: 5px 0 10px 85px;
 }
 
 .driver_card li {
@@ -166,7 +166,7 @@ body {
 }
 
 .riders_label {
-    margin: 15px 0 -20px 17px;
+    margin: 15px 0 -20px 5px;
 }
 
 .the_choice_driver {
@@ -388,7 +388,7 @@ a {
 
 .rider_card {
     background-color: #eee;
-    padding: 12px;
+    padding: 10px 12px;
     height: 43px;
     margin: 0 0 10px 0;
     color: #393939;
@@ -402,7 +402,7 @@ a {
 .rider_name {
     font-family: 'WhitneyMedium';
     font-size: 18px;
-    margin: 0 0 10px 0;
+    margin: 0 0 7px 0;
 }
 
 .rider_phone {
@@ -414,7 +414,7 @@ a {
     width: 30px;
     height: 30px;
     float: right;
-    margin: -40px 5px 0 0;
+    margin: -37px 5px 0 0;
 }
 
 #delete_driver_form {

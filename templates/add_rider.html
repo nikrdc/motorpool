@@ -1,12 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Join this ride{% endblock %}
 {% block body %}
+<script>
+    $(document).ready(function() {
+        $('.ve_driver_hover').hide();
+
+        $('.the_choice_driver').hover(function() {
+            $(this.children[1]).fadeIn(200);
+        }, function() {
+            $(this.children[1]).fadeOut(200);
+        })
+    });
+</script>
+
 <div class="title">Join this ride</div>
 
 <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id, _external=True) }}">
     <div class="driver_card" id="join_driver_card">
         <div class="the_choice_driver">
             <div class="driver_name">{{ driver.name }}</div>
+            <div class="ve_driver_hover">View/edit</div>
             <div class="linebreak"></div>
 
             <div class="descriptor">Departure time</div>

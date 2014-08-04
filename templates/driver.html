@@ -10,7 +10,8 @@ with {{ driver.name }}{% endblock %}
 
 <script>
     $(document).ready(function() {
-        $('.delete_rider').hover(function() {
+        var $delete_rider = $('.delete_rider');
+        $delete_rider.hover(function() {
             $(this.parentNode.parentNode).css("background-color","#cc7979");
             $(this.parentNode.parentNode).css("color","#911313");
             $(this).attr('src', "/static/img/close_red.png");
