@@ -26,7 +26,13 @@
             <div class="date">{{ driver.datetime.strftime('%A %B %-d') }}</div>
             <div class="time">{{ driver.datetime.strftime('%-I:%M %p') }}</div>
 
-            <div class="descriptor">Leaving from</div>
+            <div class="descriptor">
+                {% if driver.going_there %}
+                    Leaving from
+                {% else %}
+                    Going to
+                {% endif %}
+            </div>
             <div class="location">{{ driver.location }}</div>
 
             {% if driver.riders.all() %}
