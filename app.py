@@ -5,7 +5,7 @@ from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
 from wtforms import StringField, SelectMultipleField, IntegerField, \
-                    SubmitField, widgets
+                    SubmitField, PasswordField, widgets
 from dateutil import parser
 from wtforms.validators import Length, Required, Email, ValidationError, \
                                NumberRange
@@ -14,6 +14,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 from threading import Thread
 from flask.ext.mail import Mail, Message
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -47,11 +48,23 @@ class Event(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
+    password_hash = db.Column(db.String(128))
 
     drivers = db.relationship('Driver', backref='event', lazy='dynamic')
 
     def __repr__(self):
         return '<Event %r>' % self.name
+
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 
 class Driver(db.Model):
@@ -91,8 +104,14 @@ class Rider(db.Model):
 
 class EventForm(Form):
     name = StringField('Event name', validators = [Required(message = 'An\
-                       event name is required!')])
+                       event name is required.')])
+    password = PasswordField('Optional event password')
     submit = SubmitField('Create')
+
+
+class LoginForm(Form):
+    password = PasswordField('Event password')
+    submit = SubmitField('Enter')
 
 
 class DriverForm(Form):
@@ -121,7 +140,7 @@ class DriverForm(Form):
         choices=[('driving_there', 'I am driving there'),
                  ('driving_back', 'I am driving back')],
         option_widget=widgets.CheckboxInput(),
-        widget = widgets.ListWidget(prefix_label=False))
+        widget = widgets.ListWidget(prefix_label = False))
     leaving_from = StringField('Location leaving from')
     leaving_at = StringField('Time departing at')
     def validate_leaving_at(form, field):
@@ -223,28 +242,50 @@ def internal_server_error(e):
 def index():
     form = EventForm()
     if form.validate_on_submit():
-        event = Event(name = form.name.data)
+        if form.password.data:
+            event = Event(name = form.name.data, password = form.password.data)
+        else:
+            event = Event(name = form.name.data)
         db.session.add(event)
         db.session.commit()
         event_token = generate_token(event)
-        flash('Share this page\'s URL with other attendees!')
+        #flash('Share this page\'s URL with other attendees!')
         return redirect(url_for('show_event', event_token = event_token))
     else:
         return render_template('index.html', form = form)
 
 
-@app.route('/<event_token>')
+@app.route('/<event_token>', methods = ['GET', 'POST'])
 def show_event(event_token):
     if Event.query.get(find(event_token)):
         event = Event.query.get(find(event_token))
-        rides_there = [driver for driver in event.drivers.all() if \
-                       driver.going_there == True]
-        rides_back = [driver for driver in event.drivers.all() if \
-                       driver.going_there == False]
-        return render_template('event.html', event = event, 
-                               event_token = event_token,
-                               rides_there = rides_there,
-                               rides_back = rides_back)
+        if event.password_hash:
+            form = LoginForm()
+            if form.validate_on_submit():
+                event = Event.query.get(find(event_token))
+                if event.verify_password(form.password.data):
+                    rides_there = [driver for driver in event.drivers.all() \
+                                   if driver.going_there == True]
+                    rides_back = [driver for driver in event.drivers.all() \
+                                  if driver.going_there == False]
+                    return render_template('event.html', event = event, 
+                                           event_token = event_token,
+                                           rides_there = rides_there,
+                                           rides_back = rides_back)
+                else:
+                    flash('This password is incorrect.')
+                    return render_template('login.html', form = form)
+            else:
+                return render_template('login.html', form = form)
+        else:
+            rides_there = [driver for driver in event.drivers.all() if \
+                           driver.going_there == True]
+            rides_back = [driver for driver in event.drivers.all() if \
+                          driver.going_there == False]
+            return render_template('event.html', event = event, 
+                                   event_token = event_token,
+                                   rides_there = rides_there,
+                                   rides_back = rides_back)
     else:
         abort(404)
 

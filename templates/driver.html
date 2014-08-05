@@ -23,14 +23,6 @@ with {{ driver.name }}{% endblock %}
     });
 </script>
 
-{% if get_flashed_messages() %}
-<div id="event_flashed_messages" class="flash">
-    {% for message in get_flashed_messages() %}
-    {{ message }}
-    {% endfor %}
-</div>
-{% endif %}
-
 <div class="title" id="driver_title">
     Ride 
     {% if driver.going_there %}

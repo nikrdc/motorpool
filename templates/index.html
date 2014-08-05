@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Motorpool{% endblock %}
 {% block body %}
-<div id="index_flashed_messages" class="flash">
-    {% for message in get_flashed_messages() %}
-        {{ message }}
-    {% endfor %}
-</div>
 <div id="logo"><img src="{{ url_for('static', filename='img/logo.png') }}"></div>
 <div id="slogan">Organize carpools for your event:</div>
 <form method="POST" class="form">
@@ -14,6 +9,13 @@
     {{ form.name() }}<br>
     {% if form.name.errors %}
         {% for error in form.name.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
+    {{ form.password.label }}<br>
+    {{ form.password() }}<br>
+    {% if form.password.errors %}
+        {% for error in form.password.errors %}
             <div class="error">{{ error }}</div>
         {% endfor %}
     {% endif %}

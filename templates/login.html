@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Motorpool{% endblock %}
+{% block body %}
+<div id="pp_description">This event is password protected.</div>
+<img id="lock" src="{{ url_for('static', filename='img/lock.png') }}">
+<form method="POST" class="form">
+    {{ form.csrf_token }}
+    {{ form.password.label }}<br>
+    {{ form.password() }}<br>
+    {% if get_flashed_messages() %}
+    <div class="flash" id="login_flash">
+        {% for message in get_flashed_messages() %}
+            {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="submit_button">{{ form.submit() }}</div>
+</form>
+{% endblock %}
