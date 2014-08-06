@@ -15,6 +15,8 @@ from threading import Thread
 from flask.ext.mail import Mail, Message
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask.ext.login import LoginManager, login_required, UserMixin, \
+                            login_user, current_user
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -41,10 +43,17 @@ def make_shell_context():
 manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(id):
+    return Event.query.get(id)
+
 
 # Models
 
-class Event(db.Model):
+class Event(UserMixin, db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
@@ -221,7 +230,16 @@ def create_driver(form, direction, event):
                 location = getattr(form, location_filler).data,
                 datetime = parser.parse(getattr(form, datetime_filler).data),
                 event = event)
-    return driver  
+    return driver 
+
+def check_credentials(event):
+    if event.password_hash:
+        if current_user == event:
+            return True
+        else:
+            return False
+    else:
+        return True
 
 
 # Errors
@@ -248,36 +266,38 @@ def index():
             event = Event(name = form.name.data)
         db.session.add(event)
         db.session.commit()
+        login_user(event)
         event_token = generate_token(event)
-        #flash('Share this page\'s URL with other attendees!')
+        flash('Share this page\'s URL with other attendees!')
         return redirect(url_for('show_event', event_token = event_token))
     else:
         return render_template('index.html', form = form)
 
 
-@app.route('/<event_token>', methods = ['GET', 'POST'])
-def show_event(event_token):
-    if Event.query.get(find(event_token)):
-        event = Event.query.get(find(event_token))
-        if event.password_hash:
-            form = LoginForm()
-            if form.validate_on_submit():
-                event = Event.query.get(find(event_token))
-                if event.verify_password(form.password.data):
-                    rides_there = [driver for driver in event.drivers.all() \
-                                   if driver.going_there == True]
-                    rides_back = [driver for driver in event.drivers.all() \
-                                  if driver.going_there == False]
-                    return render_template('event.html', event = event, 
-                                           event_token = event_token,
-                                           rides_there = rides_there,
-                                           rides_back = rides_back)
-                else:
-                    flash('This password is incorrect.')
-                    return render_template('login.html', form = form)
+@app.route('/<event_token>/login', methods = ['GET', 'POST'])
+def login(event_token):
+    event = Event.query.get(find(event_token))
+    if event:
+        form = LoginForm()
+        if form.validate_on_submit():
+            if event.verify_password(form.password.data):
+                login_user(event)
+                return redirect(url_for('show_event', 
+                                        event_token = event_token))
             else:
+                flash('This password is incorrect.')
                 return render_template('login.html', form = form)
         else:
+            return render_template('login.html', form = form)    
+    else:
+        abort(404)
+
+
+@app.route('/<event_token>')
+def show_event(event_token):
+    event = Event.query.get(find(event_token))
+    if event:
+        if check_credentials(event):
             rides_there = [driver for driver in event.drivers.all() if \
                            driver.going_there == True]
             rides_back = [driver for driver in event.drivers.all() if \
@@ -286,16 +306,18 @@ def show_event(event_token):
                                    event_token = event_token,
                                    rides_there = rides_there,
                                    rides_back = rides_back)
+        else:
+            return redirect(url_for('login', event_token = event_token))
     else:
         abort(404)
 
 
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
-    if Event.query.get(find(event_token)):
-        event = Event.query.get(find(event_token))
-        driver = Driver.query.get(driver_id)
-        if driver in event.drivers:
+    event = Event.query.get(find(event_token))
+    driver = Driver.query.get(driver_id)
+    if event and driver in event.drivers:
+        if check_credentials(event):
             form = DriverForm(obj = driver, leaving_from = driver.location,
                 leaving_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'), 
                 going_to = driver.location,
@@ -323,7 +345,7 @@ def show_driver(event_token, driver_id):
                                        event_token = event_token,
                                        driver = driver, form = form)
         else:
-            abort(404)
+            return redirect(url_for('login', event_token = event_token))
     else:
         abort(404)
 
@@ -332,19 +354,22 @@ def show_driver(event_token, driver_id):
 def delete_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver_id)
-    if driver in event.drivers:
-        db.session.delete(driver)
-        send_email(driver.email, 'Your ride has been deleted', 
-                   'mail/driver_deleted_driver', driver = driver, 
-                   event = event)
-        riders = driver.riders
-        for rider in driver.riders:
-            db.session.delete(rider)
-            send_email(rider.email, 'A ride you were in has been deleted', 
-                       'mail/driver_deleted_rider', rider = rider,
-                       driver = driver, event = event)
-        db.session.commit()
-        return redirect(url_for('show_event', event_token = event_token))
+    if event and driver in event.drivers:
+        if check_credentials(event):
+            db.session.delete(driver)
+            send_email(driver.email, 'Your ride has been deleted', 
+                       'mail/driver_deleted_driver', driver = driver, 
+                       event = event)
+            riders = driver.riders
+            for rider in driver.riders:
+                db.session.delete(rider)
+                send_email(rider.email, 'A ride you were in has been deleted', 
+                           'mail/driver_deleted_rider', rider = rider,
+                           driver = driver, event = event)
+            db.session.commit()
+            return redirect(url_for('show_event', event_token = event_token))
+        else:
+            return redirect(url_for('login', event_token = event_token))
     else:
         abort(404)
 
@@ -354,49 +379,55 @@ def delete_rider(event_token, driver_id, rider_id):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver_id)
     rider = Rider.query.get(rider_id)
-    if driver in event.drivers and rider in driver.riders:
-        db.session.delete(rider)
-        send_email(rider.email, 'You have been deleted from a ride', 
-                   'mail/rider_deleted_rider', rider = rider,
-                   driver = driver, event = event)
-        db.session.commit()
-        return redirect(url_for('show_driver', event_token = event_token,
-                                driver_id = driver_id))
+    if event and driver in event.drivers and rider in driver.riders:
+        if check_credentials(event):
+            db.session.delete(rider)
+            send_email(rider.email, 'You have been deleted from a ride', 
+                       'mail/rider_deleted_rider', rider = rider,
+                       driver = driver, event = event)
+            db.session.commit()
+            return redirect(url_for('show_driver', event_token = event_token,
+                                    driver_id = driver_id))
+        else:
+            return redirect(url_for('login', event_token = event_token))
     else:
         abort(404)
 
 
 @app.route('/<event_token>/add', methods = ['GET', 'POST'])
 def add_driver(event_token):
-    if Event.query.get(find(event_token)):
-        form = DriverForm()
-        event = Event.query.get(find(event_token))
-        if form.validate_on_submit():
-            directions = form.directions.data
-            directions_length = len(directions)
-            if directions_length == 2:
-                driver_there = create_driver(form, directions[0], event)
-                driver_back = create_driver(form, directions[1], event)
-                db.session.add_all([driver_there, driver_back])
-            elif directions_length == 1:
-                driver = create_driver(form, directions[0], event)
-                db.session.add(driver)
+    event = Event.query.get(find(event_token))
+    if event:
+        if check_credentials(event):
+            form = DriverForm()
+            if form.validate_on_submit():
+                directions = form.directions.data
+                directions_length = len(directions)
+                if directions_length == 2:
+                    driver_there = create_driver(form, directions[0], event)
+                    driver_back = create_driver(form, directions[1], event)
+                    db.session.add_all([driver_there, driver_back])
+                elif directions_length == 1:
+                    driver = create_driver(form, directions[0], event)
+                    db.session.add(driver)
+                else:
+                    abort(500)
+                db.session.commit()
+                return redirect(url_for('show_event', event_token = event_token))
             else:
-                abort(500)
-            db.session.commit()
-            return redirect(url_for('show_event', event_token = event_token))
+                return render_template('add_driver.html', form = form)
         else:
-            return render_template('add_driver.html', form = form)
+            return redirect(url_for('login', event_token = event_token))
     else:
         abort(404)
 
 
 @app.route('/<event_token>/<driver_id>/add', methods = ['GET', 'POST'])
 def add_rider(event_token, driver_id):
-    if Event.query.get(find(event_token)):
-        event = Event.query.get(find(event_token))
-        driver = Driver.query.get(driver_id)
-        if driver in event.drivers:
+    event = Event.query.get(find(event_token))
+    driver = Driver.query.get(driver_id)
+    if event and driver in event.drivers:
+        if check_credentials(event):
             if len(driver.riders.all()) < driver.capacity - 1:
                 form = RiderForm()
                 if form.validate_on_submit():
@@ -417,7 +448,7 @@ def add_rider(event_token, driver_id):
                 return redirect(url_for('show_event', 
                                         event_token = event_token))
         else:
-            abort(404)
+            return redirect(url_for('login', event_token = event_token))
     else:
         abort(404)
 
