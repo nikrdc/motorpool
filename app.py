@@ -152,22 +152,36 @@ class DriverForm(Form):
         widget = widgets.ListWidget(prefix_label = False))
     leaving_from = StringField('Location leaving from')
     leaving_at = StringField('Time departing at')
-    '''
+    
     def validate_leaving_at(form, field):
+        '''
         if field.data:
             if parser.parse(field.data) < datetime.now():
                 raise ValidationError('Time travelling is not permitted (yet).\
                                        Please enter a time in the future.')
-    '''
+        '''
+        try:
+            parser.parse(field.data)
+        except TypeError:
+            raise ValidationError('This time format is not le cool. Try the \
+                                  placeholder format.')
+
     going_to = StringField('Location going to')
     going_at = StringField('Time departing at')
-    '''
+
     def validate_going_at(form, field):
+        '''
         if field.data:
             if parser.parse(field.data) < datetime.now():
                 raise ValidationError('Time travelling is not permitted (yet).\
                                        Please enter a time in the future.')
-    '''
+        '''
+        try:
+            parser.parse(field.data)
+        except TypeError:
+            raise ValidationError('This time format is not le cool. Try the \
+                                  placeholder format.')
+
     submit = SubmitField('Submit')
     save = SubmitField('Save info')
 
