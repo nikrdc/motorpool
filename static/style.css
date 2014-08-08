@@ -109,7 +109,7 @@ body {
     width: 300px;
     margin: 0 auto 10px auto;
     font-family: 'WhitneyMedium';
-    font-size: 14.5px;
+    font-size: 15px;
 }
 
 .driver_name {
@@ -135,7 +135,7 @@ body {
 }
 
 .direction {
-    margin: 10px 0 0 5px;
+    margin: 15px 0 0 5px;
 }
 
 .datetime, .time, .location {
@@ -144,11 +144,11 @@ body {
 }
 
 .datetime {
-    margin: -16px 0 0 125px;
+    margin: -17px 0 0 125px;
 }
 
 .location {
-    margin: -16px 0 0 125px;
+    margin: -17px 0 0 125px;
 }
  
 .driver_card ul {
