@@ -1,13 +1,13 @@
 """initial migration
 
-Revision ID: 4bb8975a9c43
+Revision ID: 492ab69d846
 Revises: None
-Create Date: 2014-06-26 10:43:25.561996
+Create Date: 2014-08-07 19:45:54.008098
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '4bb8975a9c43'
+revision = '492ab69d846'
 down_revision = None
 
 from alembic import op
@@ -19,18 +19,20 @@ def upgrade():
     op.create_table('events',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
+    sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('drivers',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('goingthere', sa.Boolean(), nullable=True),
+    sa.Column('going_there', sa.Boolean(), nullable=True),
     sa.Column('name', sa.String(length=64), nullable=True),
     sa.Column('phone', sa.String(length=64), nullable=True),
+    sa.Column('email', sa.String(length=64), nullable=True),
     sa.Column('capacity', sa.Integer(), nullable=True),
-    sa.Column('make_model', sa.String(length=64), nullable=True),
     sa.Column('car_color', sa.String(length=64), nullable=True),
-    sa.Column('datetime', sa.DateTime(), nullable=True),
+    sa.Column('make_model', sa.String(length=64), nullable=True),
     sa.Column('location', sa.String(length=64), nullable=True),
+    sa.Column('datetime', sa.DateTime(), nullable=True),
     sa.Column('event_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['events.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -39,6 +41,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=True),
     sa.Column('phone', sa.String(length=64), nullable=True),
+    sa.Column('email', sa.String(length=64), nullable=True),
     sa.Column('driver_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['driver_id'], ['drivers.id'], ),
     sa.PrimaryKeyConstraint('id')

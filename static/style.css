@@ -85,13 +85,10 @@ body {
 /* Landing */
 
 #logo {
-    width: 600px;
-    margin: 0px auto 0 auto;
-    text-align: center;
-}
-
-#logo img {
-    width: 100%;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: block;
 }
 
 #slogan {
@@ -332,7 +329,7 @@ a {
     text-decoration: none;
 }
 
-.rider_button {
+.rider_button, .full_ride {
     width: 314px;
     background-color: #c0ccd0;
     color: #64696b;
@@ -361,6 +358,12 @@ a {
     line-height: 130%;
     color: #2064c7;
     font-size: 18px;
+}
+
+.full_ride {
+    background-color: #ccc;
+    border: 3px solid #ccc;
+    color: #6f6f6f;
 }
 
 
@@ -455,5 +458,44 @@ a {
     width: 50px;
     display: block;
     margin: 0 auto;
+}
+
+
+/* Copy */
+
+#grey {
+    background-color: #f3f3f3;
+    padding: 60px 0 100px 0;
+    margin: 75px 0 -75px 0;
+}
+
+#copy {
+    width: 80%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.step {
+    margin: 40px 0 0 0;
+}
+
+.number {
+    font-family: 'Whitney-Medium';
+    font-size: 18px;
+    margin: 0 0 5px 0;
+    color: #194e9b;
+    line-height: 140%;
+}
+
+.description {
+    font-family: 'WhitneyBook';
+    font-size: 18px;
+    line-height: 120%;
+}
+
+#arrow {
+    display: block;
+    width: 40px;
+    margin: 50px auto -102px auto;
 }
 

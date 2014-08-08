@@ -278,17 +278,20 @@ def index():
 def login(event_token):
     event = Event.query.get(find(event_token))
     if event:
-        form = LoginForm()
-        if form.validate_on_submit():
-            if event.verify_password(form.password.data):
-                login_user(event)
-                return redirect(url_for('show_event', 
-                                        event_token = event_token))
-            else:
-                flash('This password is incorrect.')
-                return render_template('login.html', form = form)
+        if check_credentials(event):
+            return redirect(url_for('show_event', event_token = event_token))
         else:
-            return render_template('login.html', form = form)    
+            form = LoginForm()
+            if form.validate_on_submit():
+                if event.verify_password(form.password.data):
+                    login_user(event)
+                    return redirect(url_for('show_event', 
+                                            event_token = event_token))
+                else:
+                    flash('This password is incorrect.')
+                    return render_template('login.html', form = form)
+            else:
+                return render_template('login.html', form = form)    
     else:
         abort(404)
 
@@ -315,35 +318,38 @@ def show_event(event_token):
 @app.route('/<event_token>/<driver_id>', methods = ['GET', 'POST'])
 def show_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
-    driver = Driver.query.get(driver_id)
-    if event and driver in event.drivers:
+    if event:
         if check_credentials(event):
-            form = DriverForm(obj = driver, leaving_from = driver.location,
+            driver = Driver.query.get(driver_id)
+            if driver in event.drivers:
+                form = DriverForm(obj = driver, leaving_from = driver.location,
                 leaving_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'), 
                 going_to = driver.location,
                 going_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'))
-            g.driver = driver
-            if form.validate_on_submit():
-                driver.name = form.name.data
-                driver.phone = form.phone.data
-                driver.email = form.email.data
-                driver.capacity = form.capacity.data
-                driver.car_color = form.car_color.data
-                driver.make_model = form.make_model.data
-                if driver.going_there:
-                    driver.location = form.leaving_from.data
-                    driver.datetime = parser.parse(form.leaving_at.data)
+                g.driver = driver
+                if form.validate_on_submit():
+                    driver.name = form.name.data
+                    driver.phone = form.phone.data
+                    driver.email = form.email.data
+                    driver.capacity = form.capacity.data
+                    driver.car_color = form.car_color.data
+                    driver.make_model = form.make_model.data
+                    if driver.going_there:
+                        driver.location = form.leaving_from.data
+                        driver.datetime = parser.parse(form.leaving_at.data)
+                    else:
+                        driver.location = form.going_to.data
+                        driver.datetime = parser.parse(form.going_at.data)
+                    db.session.add(driver)
+                    db.session.commit()
+                    return redirect(url_for('show_event', 
+                                            event_token = event_token))
                 else:
-                    driver.location = form.going_to.data
-                    driver.datetime = parser.parse(form.going_at.data)
-                db.session.add(driver)
-                db.session.commit()
-                return redirect(url_for('show_event', 
-                                        event_token = event_token))
+                    return render_template('driver.html', 
+                                           event_token = event_token,
+                                           driver = driver, form = form)
             else:
-                return render_template('driver.html', 
-                                       event_token = event_token,
-                                       driver = driver, form = form)
+                abort(404)
         else:
             return redirect(url_for('login', event_token = event_token))
     else:
@@ -355,21 +361,18 @@ def delete_driver(event_token, driver_id):
     event = Event.query.get(find(event_token))
     driver = Driver.query.get(driver_id)
     if event and driver in event.drivers:
-        if check_credentials(event):
-            db.session.delete(driver)
-            send_email(driver.email, 'Your ride has been deleted', 
-                       'mail/driver_deleted_driver', driver = driver, 
-                       event = event)
-            riders = driver.riders
-            for rider in driver.riders:
-                db.session.delete(rider)
-                send_email(rider.email, 'A ride you were in has been deleted', 
-                           'mail/driver_deleted_rider', rider = rider,
-                           driver = driver, event = event)
-            db.session.commit()
-            return redirect(url_for('show_event', event_token = event_token))
-        else:
-            return redirect(url_for('login', event_token = event_token))
+        db.session.delete(driver)
+        send_email(driver.email, 'Your ride has been deleted', 
+                   'mail/driver_deleted_driver', driver = driver, 
+                   event = event)
+        riders = driver.riders
+        for rider in driver.riders:
+            db.session.delete(rider)
+            send_email(rider.email, 'A ride you were in has been deleted', 
+                       'mail/driver_deleted_rider', rider = rider,
+                       driver = driver, event = event)
+        db.session.commit()
+        return redirect(url_for('show_event', event_token = event_token))
     else:
         abort(404)
 
@@ -380,16 +383,13 @@ def delete_rider(event_token, driver_id, rider_id):
     driver = Driver.query.get(driver_id)
     rider = Rider.query.get(rider_id)
     if event and driver in event.drivers and rider in driver.riders:
-        if check_credentials(event):
-            db.session.delete(rider)
-            send_email(rider.email, 'You have been deleted from a ride', 
-                       'mail/rider_deleted_rider', rider = rider,
-                       driver = driver, event = event)
-            db.session.commit()
-            return redirect(url_for('show_driver', event_token = event_token,
-                                    driver_id = driver_id))
-        else:
-            return redirect(url_for('login', event_token = event_token))
+        db.session.delete(rider)
+        send_email(rider.email, 'You have been deleted from a ride', 
+                   'mail/rider_deleted_rider', rider = rider,
+                   driver = driver, event = event)
+        db.session.commit()
+        return redirect(url_for('show_driver', event_token = event_token,
+                                driver_id = driver_id))
     else:
         abort(404)
 
@@ -425,28 +425,31 @@ def add_driver(event_token):
 @app.route('/<event_token>/<driver_id>/add', methods = ['GET', 'POST'])
 def add_rider(event_token, driver_id):
     event = Event.query.get(find(event_token))
-    driver = Driver.query.get(driver_id)
-    if event and driver in event.drivers:
+    if event:
         if check_credentials(event):
-            if len(driver.riders.all()) < driver.capacity - 1:
-                form = RiderForm()
-                if form.validate_on_submit():
-                    rider = Rider(name = form.name.data,
-                                  phone = form.phone.data,
-                                  email = form.email.data,
-                                  driver = driver)
-                    db.session.add(rider)
-                    db.session.commit()
+            driver = Driver.query.get(driver_id)
+            if driver in event.drivers:
+                if len(driver.riders.all()) < driver.capacity - 1:
+                    form = RiderForm()
+                    if form.validate_on_submit():
+                        rider = Rider(name = form.name.data,
+                                      phone = form.phone.data,
+                                      email = form.email.data,
+                                      driver = driver)
+                        db.session.add(rider)
+                        db.session.commit()
+                        return redirect(url_for('show_event', 
+                                                event_token = event_token))
+                    else:
+                        return render_template('add_rider.html', form = form, 
+                                               driver = driver,
+                                               event_token = event_token)
+                else:
+                    flash('There isn\'t any space left on that ride!')
                     return redirect(url_for('show_event', 
                                             event_token = event_token))
-                else:
-                    return render_template('add_rider.html', form = form, 
-                                           driver = driver,
-                                           event_token = event_token)
             else:
-                flash('There isn\'t any space left on that ride!')
-                return redirect(url_for('show_event', 
-                                        event_token = event_token))
+                abort(404)
         else:
             return redirect(url_for('login', event_token = event_token))
     else:

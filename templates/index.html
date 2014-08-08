@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Motorpool{% endblock %}
 {% block body %}
-<div id="logo"><img src="{{ url_for('static', filename='img/logo.png') }}"></div>
+<img id="logo" src="{{ url_for('static', filename='img/logo.png') }}">
 <div id="slogan">Organize carpools for your event:</div>
 <form method="POST" class="form">
     {{ form.csrf_token }}
@@ -21,4 +21,22 @@
     {% endif %}
     <div class="submit_button">{{ form.submit() }}</div>
 </form>
+<img id="arrow" src="{{ url_for('static', filename='img/arrow.png') }}">
+<div id="grey">
+    <div id="copy">
+        <div class="title" >How Motorpool works:</div>
+        <div class="step">
+            <div class="number">1. Create an event and share its URL with other attendees</div>
+            <div class="description">Each event has a securely unique URL that can’t be reproduced by anyone it hasn’t been shared with. For further protection, add a password to the event.</div>
+        </div>
+        <div class="step">
+            <div class="number">2. Wait for attendees to join the event as drivers and riders, organizing carpools organically</div>
+            <div class="description">Each event has a list of rides there and back. Anyone is free to join as a driver and create new rides. Once rides have been added by drivers, other attendees can join them as riders.</div>
+        </div>
+        <div class="step">
+            <div class="number">3. Check the event page to view and edit ride information</div>
+            <div class="description">Drivers and riders can return to the event page to check who they’re riding with and edit their rides. Motorpool displays a range of information that makes organizing carpools much easier.</div>
+        </div>
+    </div>
+</div>
 {% endblock %}

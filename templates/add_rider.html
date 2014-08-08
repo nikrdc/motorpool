@@ -15,39 +15,39 @@
 
 <div class="title">Join this ride</div>
 
-<a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id) }}">
-    <div class="driver_card" id="join_driver_card">
-        <div class="the_choice_driver">
-            <div class="driver_name">{{ driver.name }}</div>
-            <div class="ve_driver_hover">View/edit</div>
-            <div class="linebreak"></div>
+<div class="driver_card" id="join_driver_card">
+    <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id) }}">
+    <div class="the_choice_driver">
+        <div class="driver_name">{{ driver.name }}</div>
+        <div class="ve_driver_hover">View/edit</div>
+        <div class="linebreak"></div>
 
-            <div class="descriptor">Departure time</div>
-            <div class="date">{{ driver.datetime.strftime('%A %B %-d') }}</div>
-            <div class="time">{{ driver.datetime.strftime('%-I:%M %p') }}</div>
+        <div class="descriptor">Departure time</div>
+        <div class="date">{{ driver.datetime.strftime('%A %B %-d') }}</div>
+        <div class="time">{{ driver.datetime.strftime('%-I:%M %p') }}</div>
 
-            <div class="descriptor">
-                {% if driver.going_there %}
-                    Leaving from
-                {% else %}
-                    Going to
-                {% endif %}
-            </div>
-            <div class="location">{{ driver.location }}</div>
+        <div class="descriptor">
+            {% if driver.going_there %}
+                Leaving from
+            {% else %}
+                Going to
+            {% endif %}
+        </div>
+        <div class="location">{{ driver.location }}</div>
 
-            {% if driver.riders.all() %}
+        {% if driver.riders.all() %}
             <div class="descriptor riders_label">Current riders</div>
             <ul>
                 {% for rider in driver.riders.all() %}
                 <li>{{ rider.name }}</li>
                 {% endfor %}
             </ul>
-            {% else %}
-                <div class="breaker"></div>
-            {% endif %}
-        </div>
+        {% else %}
+            <div class="breaker"></div>
+        {% endif %}
     </div>
-</a>
+    </a>
+</div>
 
 <form method="POST" class="form">
     {{ form.csrf_token }}
