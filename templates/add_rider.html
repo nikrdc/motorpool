@@ -23,10 +23,9 @@
         <div class="linebreak"></div>
 
         <div class="descriptor">Departure time</div>
-        <div class="date">{{ driver.datetime.strftime('%A %B %-d') }}</div>
-        <div class="time">{{ driver.datetime.strftime('%-I:%M %p') }}</div>
+        <div class="datetime">{{ driver.datetime.strftime('%A %B %-d, %-I:%M %p') }}</div>
 
-        <div class="descriptor">
+        <div class="descriptor direction">
             {% if driver.going_there %}
                 Leaving from
             {% else %}

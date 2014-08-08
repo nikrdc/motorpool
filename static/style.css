@@ -106,20 +106,20 @@ body {
 
 .driver_card {
     background-color: #eee;
-    width: 320px;
+    width: 300px;
     margin: 0 auto 10px auto;
     font-family: 'WhitneyMedium';
-    font-size: 15px;
+    font-size: 14.5px;
 }
 
 .driver_name {
     font-family: 'WhitneyMedium';
     font-size: 18px;
-    padding: 10px 0 0 10px;
+    padding: 10px 0 0 12px;
 }
 
 .linebreak {
-    width: 290px;
+    width: 270px;
     border-bottom: 1px solid #abb4b7;
     margin: 6px auto 15px auto;
 }
@@ -134,25 +134,26 @@ body {
     text-align: right;
 }
 
-.date, .time, .location {
-    width: 190px;
+.direction {
+    margin: 10px 0 0 5px;
 }
 
-.date {
-    margin: -15px 0 0 125px;
+.datetime, .time, .location {
+    width: 150px;
+    line-height: 140%;
 }
 
-.time {
-    margin: 5px 0 18px 125px;
+.datetime {
+    margin: -16px 0 0 125px;
 }
 
 .location {
-    margin: -15px 0 0 125px;
+    margin: -16px 0 0 125px;
 }
  
 .driver_card ul {
     list-style-type: none;
-    margin: 5px 0 10px 85px;
+    margin: 6px 0 10px 85px;
 }
 
 .driver_card li {
@@ -195,7 +196,7 @@ body {
 /* Forms */
 
 .form {
-    width: 320px;
+    width: 300px;
     margin: 50px auto 0 auto;
 }
 
@@ -209,7 +210,7 @@ body {
 
 input[type="text"], input[type="password"] {
     background-color: #eee;
-    width: 320px;
+    width: 300px;
     height: 40px;
     border: none;
     font-size: 20px;
@@ -306,17 +307,17 @@ input[type="checkbox"]:checked {
 /* Event */
 
 #rides_there {
-    width: 320px;
+    width: 300px;
     float: left;
 }
 
 #rides_back {
-    width: 320px;
+    width: 300px;
     float: right;
 }
 
 #rides {
-    width: 660px;
+    width: 630px;
     margin: 0 auto;
 }
 
@@ -330,7 +331,7 @@ a {
 }
 
 .rider_button, .full_ride {
-    width: 314px;
+    width: 294px;
     background-color: #c0ccd0;
     color: #64696b;
     text-transform: uppercase;
@@ -378,7 +379,7 @@ a {
 }
 
 #driver_riders, #driver_info {
-    width: 320px;
+    width: 300px;
     margin: 0 auto;
 }
 
