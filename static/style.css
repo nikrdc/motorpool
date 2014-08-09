@@ -273,7 +273,7 @@ input[type="checkbox"] {
     -webkit-appearance: none;
     background-color: #eee;
     cursor: pointer;
-    margin: 0 0 -40px 282px;
+    margin: 0 0 -40px 262px;
     outline-width: 0;
     background: url('/static/img/unchecked.png') no-repeat center #eee;
 }
@@ -289,7 +289,7 @@ input[type="checkbox"]:checked {
     text-transform: none;
     background-color: #eee;
     height: 20px;
-    width: 300px;
+    width: 280px;
     display: block;
     border: none;
     font-size: 20px;
