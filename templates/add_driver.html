@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Join as a driver{% endblock %}
 {% block body %}
+<link rel="stylesheet" href="{{ url_for('static', filename='js/dtp/jquery.datetimepicker.css') }}">
+<script src="{{ url_for('static', filename='js/dtp/jquery.datetimepicker.js') }}" type="text/javascript"></script>
 <script>
     $(document).ready(function() {
         var $checkbox0 = $('#directions-0');
@@ -74,6 +76,14 @@
                 setSubmitSlide(first_check, second_check);
             }
         });
+
+        $('#capacity').keypress(function(e) {
+            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
+            if (verified) {e.preventDefault();}
+        });
+
+        $('#leaving_at').datetimepicker();
+        $('#going_at').datetimepicker();
     });
 </script>
 

@@ -7,10 +7,13 @@
     {% endif %}
 with {{ driver.name }}{% endblock %}
 {% block body %}
+<link rel="stylesheet" href="{{ url_for('static', filename='js/dtp/jquery.datetimepicker.css') }}">
+<script src="{{ url_for('static', filename='js/dtp/jquery.datetimepicker.js') }}" type="text/javascript"></script>
 
 <script>
     $(document).ready(function() {
         var $delete_rider = $('.delete_rider');
+        
         $delete_rider.hover(function() {
             $(this.parentNode.parentNode).css("background-color","#cc7979");
             $(this.parentNode.parentNode).css("color","#911313");
@@ -20,6 +23,14 @@ with {{ driver.name }}{% endblock %}
             $(this.parentNode.parentNode).css("color","#393939");
             $(this).attr('src', "{{ url_for('static', filename='img/close_grey.png') }}");
         });
+
+        $('#capacity').keypress(function(e) {
+            var verified = (e.which == 8 || e.which == undefined || e.which == 0) ? null : String.fromCharCode(e.which).match(/[^0-9]/);
+            if (verified) {e.preventDefault();}
+        });
+        
+        $('#leaving_at').datetimepicker();
+        $('#going_at').datetimepicker();
     });
 </script>
 

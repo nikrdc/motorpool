@@ -132,8 +132,8 @@ class DriverForm(Form):
                         email address is invalid.'), Required(message = 'An \
                         email address is required.')])
     capacity = IntegerField('Total car capacity (including driver)',
-                            validators = [NumberRange(1, 10), Required( 
-                            message = 'The car capacity is required.')])
+                            validators = [Required(message = 'The car capacity\
+                            is required.')])
     def validate_capacity(form, field):
         if hasattr(g, 'driver'):
             if field.data < len(g.driver.riders.all()) + 1:
@@ -154,12 +154,6 @@ class DriverForm(Form):
     leaving_at = StringField('Time departing at')
     
     def validate_leaving_at(form, field):
-        '''
-        if field.data:
-            if parser.parse(field.data) < datetime.now():
-                raise ValidationError('Time travelling is not permitted (yet).\
-                                       Please enter a time in the future.')
-        '''
         try:
             parser.parse(field.data)
         except TypeError:
@@ -170,12 +164,6 @@ class DriverForm(Form):
     going_at = StringField('Time departing at')
 
     def validate_going_at(form, field):
-        '''
-        if field.data:
-            if parser.parse(field.data) < datetime.now():
-                raise ValidationError('Time travelling is not permitted (yet).\
-                                       Please enter a time in the future.')
-        '''
         try:
             parser.parse(field.data)
         except TypeError:
