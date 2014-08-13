@@ -138,6 +138,11 @@
         <div class="header">Ride there</div>
         {{ form.leaving_from.label }}<br>
         {{ form.leaving_from(placeholder="New York office") }}<br>
+        {% if form.leaving_from.errors %}
+            {% for error in form.leaving_from.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {{ form.leaving_at.label }}<br>
         {{ form.leaving_at(placeholder="October 24 2003, 12:35 PM") }}<br>
         {% if form.leaving_at.errors %}
@@ -151,6 +156,11 @@
         <div class="header">Ride back</div>
         {{ form.going_to.label }}<br>
         {{ form.going_to(placeholder="London office") }}<br>
+        {% if form.going_to.errors %}
+            {% for error in form.going_to.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endif %}
         {{ form.going_at.label }}<br>
         {{ form.going_at(placeholder="October 24 2003, 4:05 PM") }}<br>
         {% if form.going_at.errors %}

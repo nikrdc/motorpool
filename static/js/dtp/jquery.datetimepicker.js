@@ -213,7 +213,7 @@
 		
 		format:	'F j Y, g:i A',
 		formatTime:	'H:i',
-		formatTimeScroller:'g:i A', /*12 hour fomat without leading zeros + lowercase am/pm [i.e 9:15 am , 17:35 pm etc]*/
+		formatTimeScroller:'g A', /*12 hour fomat without leading zeros + lowercase am/pm [i.e 9:15 am , 17:35 pm etc]*/
 		formatDate:	'Y/m/d',
 		
 		startDate:	false, // new Date(), '1986/12/08', '-1970/01/05','-1970/01/05', 

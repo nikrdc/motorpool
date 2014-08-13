@@ -150,10 +150,22 @@ class DriverForm(Form):
                  ('driving_back', 'I am driving back')],
         option_widget=widgets.CheckboxInput(),
         widget = widgets.ListWidget(prefix_label = False))
+
     leaving_from = StringField('Location leaving from')
+
+    def validate_leaving_from(form, field):
+        if 'driving_there' in form.directions.data:
+            if field.data == '':
+                raise ValidationError('This field is required if you have \
+                                      indicated you are driving there.')
+
     leaving_at = StringField('Time departing at')
     
     def validate_leaving_at(form, field):
+        if 'driving_there' in form.directions.data:
+            if field.data == '':
+                raise ValidationError('This field is required if you have \
+                                      indicated you are driving there.')
         try:
             parser.parse(field.data)
         except TypeError:
@@ -161,9 +173,20 @@ class DriverForm(Form):
                                   placeholder format.')
 
     going_to = StringField('Location going to')
+
+    def validate_going_to(form, field):
+        if 'driving_back' in form.directions.data:
+            if field.data == '':
+                raise ValidationError('This field is required if you have \
+                                      indicated you are driving back.')
+
     going_at = StringField('Time departing at')
 
     def validate_going_at(form, field):
+        if 'driving_back' in form.directions.data:
+            if field.data == '':
+                raise ValidationError('This field is required if you have \
+                                      indicated you are driving back.')
         try:
             parser.parse(field.data)
         except TypeError:
