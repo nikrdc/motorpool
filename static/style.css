@@ -505,3 +505,23 @@ a {
     margin: 50px auto -102px auto;
 }
 
+.link {
+    display: inline;
+    width: 150px;
+    text-align: center;
+    font-family: 'SentinelMedium';
+    font-size: 20px;
+    color: #565656;
+    margin: 27px 0 12px 0;
+    padding: 0 0 5px 0;
+    border-bottom: 3px solid #afafaf;
+}
+
+#link_there {
+    float: left;
+}
+
+#link_back {
+    float: right;
+}
+

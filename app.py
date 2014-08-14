@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, redirect, session, redirect, \
-				  url_for, abort, flash, g
+                  url_for, abort, flash, g
 from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
@@ -13,7 +13,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from threading import Thread
 from flask.ext.mail import Mail, Message
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import LoginManager, login_required, UserMixin, \
                             login_user, current_user
@@ -32,6 +32,7 @@ app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.permanent_session_lifetime = timedelta(days = 120)
 
 manager = Manager(app)
 db = SQLAlchemy(app)

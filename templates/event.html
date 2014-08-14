@@ -4,12 +4,42 @@
 <script>
     $(document).ready(function() {
         $('.ve_driver_hover').hide();
+        $('.link').hide();
 
         $('.the_choice_driver').hover(function() {
             $(this.children[1]).fadeIn(200);
         }, function() {
             $(this.children[1]).fadeOut(200);
         })
+
+        if ($(window).width() <= 500) {
+
+            var $rides_there = $('#rides_there');
+            var $rides_back = $('#rides_back');
+            var $link_there = $('#link_there');
+            var $link_back = $('#link_back');
+
+            $('.link').show();
+            $('.header').hide();
+            $('#rides').css('width', '300px');
+            $rides_back.hide();
+            $link_back.css('border', 'none');
+
+            $link_there.click(function(){
+                $rides_back.hide();
+                $link_back.css('border', 'none');
+                $rides_there.show();
+                $link_there.css('border-bottom', '3px solid #afafaf');
+            });
+
+            $link_back.click(function(){
+                $rides_there.hide();
+                $link_there.css('border', 'none');
+                $link_back.css('border-bottom', '3px solid #afafaf');
+                $rides_back.show();
+                $rides_back.css('float', 'left');
+            });
+        }
     });
 </script>
 
@@ -26,6 +56,8 @@
 <a href="{{ url_for('add_driver', event_token = event_token) }}"><div id="driver_button">Join as a driver</div></a>
 
 <div id="rides">
+    <div class="link" id="link_there">Rides there</div>
+    <div class="link" id="link_back">Rides back</div>
     {% if event.drivers.all() %}
         <div id="rides_there">
             <div class="header">Rides there</div>
