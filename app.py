@@ -428,7 +428,16 @@ def add_driver(event_token):
     event = Event.query.get(find(event_token))
     if event:
         if check_credentials(event):
-            form = DriverForm()
+            try:
+                form = DriverForm(name = session['d_name'],
+                                  phone = session['d_phone'],
+                                  email = session['d_email'],
+                                  capacity = session['d_capacity'],
+                                  car_color = session['d_car_color'],
+                                  make_model = session['d_make_model'])
+                flash('Your information has been entered automatically!')
+            except KeyError:
+                form = DriverForm()
             if form.validate_on_submit():
                 directions = form.directions.data
                 directions_length = len(directions)
@@ -441,6 +450,12 @@ def add_driver(event_token):
                     db.session.add(driver)
                 else:
                     abort(500)
+                session['d_name'] = form.name.data 
+                session['d_phone'] = form.phone.data
+                session['d_email'] = form.email.data
+                session['d_capacity'] = form.capacity.data
+                session['d_car_color'] = form.car_color.data
+                session['d_make_model'] = form.make_model.data
                 db.session.commit()
                 return redirect(url_for('show_event', event_token = event_token))
             else:
@@ -459,13 +474,22 @@ def add_rider(event_token, driver_id):
             driver = Driver.query.get(driver_id)
             if driver in event.drivers:
                 if len(driver.riders.all()) < driver.capacity - 1:
-                    form = RiderForm()
+                    try:
+                        form = RiderForm(name = session['r_name'],
+                                         phone = session['r_phone'],
+                                         email = session['r_email'])
+                        flash('Your information has been entered automatically!')
+                    except KeyError:
+                        form = RiderForm()
                     if form.validate_on_submit():
                         rider = Rider(name = form.name.data,
                                       phone = form.phone.data,
                                       email = form.email.data,
                                       driver = driver)
                         db.session.add(rider)
+                        session['r_name'] = form.name.data 
+                        session['r_phone'] = form.phone.data
+                        session['r_email'] = form.email.data
                         db.session.commit()
                         return redirect(url_for('show_event', 
                                                 event_token = event_token))

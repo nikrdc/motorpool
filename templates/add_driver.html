@@ -89,6 +89,14 @@
 
 <div class="title">Join as a driver</div>
 
+{% if get_flashed_messages() %}
+<div class="flash" id="add_flash">
+    {% for message in get_flashed_messages() %}
+        {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+
 <form method="POST" class="form" class="new_item">
     {{ form.csrf_token }}
     {{ form.name.label }}<br>

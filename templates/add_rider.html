@@ -15,6 +15,14 @@
 
 <div class="title">Join this ride</div>
 
+{% if get_flashed_messages() %}
+<div class="flash" id="add_flash">
+    {% for message in get_flashed_messages() %}
+        {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+
 <div class="driver_card" id="join_driver_card">
     <a href="{{ url_for('show_driver', event_token = event_token, driver_id = driver.id) }}">
     <div class="the_choice_driver">
