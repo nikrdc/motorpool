@@ -450,6 +450,7 @@ def add_driver(event_token):
                     db.session.add(driver)
                 else:
                     abort(500)
+                session.permanent = True
                 session['d_name'] = form.name.data 
                 session['d_phone'] = form.phone.data
                 session['d_email'] = form.email.data
@@ -487,6 +488,7 @@ def add_rider(event_token, driver_id):
                                       email = form.email.data,
                                       driver = driver)
                         db.session.add(rider)
+                        session.permanent = True
                         session['r_name'] = form.name.data 
                         session['r_phone'] = form.phone.data
                         session['r_email'] = form.email.data
