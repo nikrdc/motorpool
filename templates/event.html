@@ -23,7 +23,11 @@
             var $link_there = $('#link_there');
             var $link_back = $('#link_back');
             if(mq.matches) {
-                $('.link').show();
+                if ($('#none_at_all').length) {
+                    $('.link').hide();
+                } else {
+                    $('.link').show();
+                }
                 $('.header').hide();
                 $('#rides').css('width', '300px');
                 $rides_back.hide();
@@ -153,7 +157,7 @@
             {% endif %}
         </div>
     {% else %}
-        <div class="no_drivers">There are no rides there or back! Why don't you join as a driver?</div>
+        <div class="no_drivers" id="none_at_all">There are no rides there or back! Why don't you join as a driver?</div>
     {% endif %}
 </div>
 {% endblock %}
