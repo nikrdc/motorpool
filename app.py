@@ -1,6 +1,6 @@
 import os
-from flask import Flask, render_template, redirect, session, redirect, \
-                  url_for, abort, flash, g
+from flask import Flask, render_template, redirect, session, url_for, abort, \
+                  flash, g
 from flask.ext.script import Manager, Shell
 from itsdangerous import URLSafeSerializer
 from flask.ext.wtf import Form
@@ -15,8 +15,7 @@ from threading import Thread
 from flask.ext.mail import Mail, Message
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask.ext.login import LoginManager, login_required, UserMixin, \
-                            login_user, current_user
+from flask.ext.login import LoginManager, current_user, UserMixin, login_user
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -135,11 +134,13 @@ class DriverForm(Form):
     capacity = IntegerField('Total car capacity (including driver)',
                             validators = [Required(message = 'The car capacity\
                             is required.')])
+
     def validate_capacity(form, field):
         if hasattr(g, 'driver'):
             if field.data < len(g.driver.riders.all()) + 1:
                 raise ValidationError('The capacity cannot be less than the \
                                       total of the riders and driver.')
+                
     car_color = StringField('Car color', validators = [Required(message = 'A \
                             car color is required.')])
     make_model = StringField('Car make and model', 
@@ -459,6 +460,7 @@ def add_driver(event_token):
                 session['d_car_color'] = form.car_color.data
                 session['d_make_model'] = form.make_model.data
                 db.session.commit()
+                session.pop('_flashes', None)
                 return redirect(url_for('show_event', event_token = event_token))
             else:
                 return render_template('add_driver.html', form = form)
@@ -494,6 +496,7 @@ def add_rider(event_token, driver_id):
                         session['r_phone'] = form.phone.data
                         session['r_email'] = form.email.data
                         db.session.commit()
+                        session.pop('_flashes', None)
                         return redirect(url_for('show_event', 
                                                 event_token = event_token))
                     else:

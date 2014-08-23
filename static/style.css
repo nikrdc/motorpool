@@ -477,8 +477,13 @@ a {
 
 #copy {
     width: 80%;
+    display: block;
     max-width: 500px;
     margin: 0 auto;
+}
+
+#copy_title {
+    width: 100%;
 }
 
 .step {
