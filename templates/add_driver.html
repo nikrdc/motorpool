@@ -141,6 +141,11 @@
     {% endif %}
     {{ form.directions.label }}<br>
     {{ form.directions() }}<br>
+    {% if form.directions.errors %}
+        {% for error in form.directions.errors %}
+            <div class="error">{{ error }}</div>
+        {% endfor %}
+    {% endif %}
 
     <div id="ride_there">
         <div class="header">Ride there</div>

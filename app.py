@@ -44,6 +44,7 @@ manager.add_command("shell", Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 login_manager = LoginManager()
+login_manager.session_protection = 'strong'
 login_manager.init_app(app)
 
 @login_manager.user_loader
@@ -112,7 +113,7 @@ class Rider(db.Model):
 # Forms
 
 class EventForm(Form):
-    name = StringField('Event name', validators = [Required(message = 'An\
+    name = StringField('Event name', validators = [Required(message = 'An \
                        event name is required.')])
     password = PasswordField('Optional event password')
     submit = SubmitField('Create')
@@ -124,6 +125,7 @@ class LoginForm(Form):
 
 
 class DriverForm(Form):
+    new = True
     name = StringField('Name', validators = [Required(message = 'A name is \
                        required.')])
     phone = StringField('Phone number', validators = [Required(message = 'A \
@@ -132,8 +134,8 @@ class DriverForm(Form):
                         email address is invalid.'), Required(message = 'An \
                         email address is required.')])
     capacity = IntegerField('Total car capacity (including driver)',
-                            validators = [Required(message = 'The car capacity\
-                            is required.')])
+                            validators = [Required(message = 'The car \
+                            capacity is required.')])
 
     def validate_capacity(form, field):
         if hasattr(g, 'driver'):
@@ -152,6 +154,11 @@ class DriverForm(Form):
                  ('driving_back', 'I am driving back')],
         option_widget=widgets.CheckboxInput(),
         widget = widgets.ListWidget(prefix_label = False))
+
+    def validate_directions(form, field):
+        if g.new_driver and len(field.data) == 0:
+            raise ValidationError('Each driver must have at least one \
+                                  direction.')
 
     leaving_from = StringField('Location leaving from')
 
@@ -200,7 +207,7 @@ class DriverForm(Form):
 
 
 class RiderForm(Form):
-    name = StringField('Name', validators = [Required(message = 'A name is\
+    name = StringField('Name', validators = [Required(message = 'A name is \
                        required.')])
     phone = StringField('Phone number', validators = [Required(message = 'A \
                         phone number is required.')])
@@ -358,6 +365,7 @@ def show_driver(event_token, driver_id):
                 going_to = driver.location,
                 going_at = driver.datetime.strftime('%B %-d %Y, %-I:%M %p'))
                 g.driver = driver
+                g.new_driver = False
                 if form.validate_on_submit():
                     driver.name = form.name.data
                     driver.phone = form.phone.data
@@ -440,6 +448,7 @@ def add_driver(event_token):
                 flash('Your information has been entered automatically!')
             except KeyError:
                 form = DriverForm()
+            g.new_driver = True
             if form.validate_on_submit():
                 directions = form.directions.data
                 directions_length = len(directions)
@@ -461,7 +470,8 @@ def add_driver(event_token):
                 session['d_make_model'] = form.make_model.data
                 db.session.commit()
                 session.pop('_flashes', None)
-                return redirect(url_for('show_event', event_token = event_token))
+                return redirect(url_for('show_event', 
+                                        event_token = event_token))
             else:
                 return render_template('add_driver.html', form = form)
         else:
@@ -482,7 +492,8 @@ def add_rider(event_token, driver_id):
                         form = RiderForm(name = session['r_name'],
                                          phone = session['r_phone'],
                                          email = session['r_email'])
-                        flash('Your information has been entered automatically!')
+                        flash('Your information has been entered \
+                              automatically!')
                     except KeyError:
                         form = RiderForm()
                     if form.validate_on_submit():

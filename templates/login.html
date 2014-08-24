@@ -8,7 +8,7 @@
     {{ form.password.label }}<br>
     {{ form.password() }}<br>
     {% if get_flashed_messages() %}
-    <div class="flash" id="login_flash">
+    <div class="flash">
         {% for message in get_flashed_messages() %}
             {{ message }}
         {% endfor %}
